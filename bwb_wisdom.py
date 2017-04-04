@@ -14,6 +14,10 @@ class WisdomCompositeWidget(QtWidgets.QWidget):
         vbox.addWidget(self.qtoolbox)
         self.setLayout(vbox)
 
+        self.four_right_efforts_qlw = QtWidgets.QListWidget()
+        self.four_right_efforts_qlw.addItems(["1", "2", "3", "4"])
+        self.qtoolbox.addItem(self.four_right_efforts_qlw, "Four Right Efforts")
+
         self.four_est_mindfulness_qlw = QtWidgets.QListWidget()
         self.four_est_mindfulness_qlw.addItems(["Body", "Feelings", "Mind", "Objects of Mind"])
         self.qtoolbox.addItem(self.four_est_mindfulness_qlw, "Four Est. of Mindfulness")

@@ -33,11 +33,7 @@ class DiaryListCompositeWidget(QtWidgets.QWidget):
         self.v_box.addLayout(hbox)
         diary_label = QtWidgets.QLabel("<h3>Diary</h3>")
         hbox.addWidget(diary_label)
-        prev_week_qpb = QtWidgets.QPushButton("Previous week")
-        hbox.addWidget(prev_week_qpb)
-        next_week_qpb = QtWidgets.QPushButton("Next week")
-        hbox.addWidget(next_week_qpb)
-        #self.list_widget.setMinimumWidth(530)
+        self.list_widget.setMinimumWidth(530)
         # -strange but we have to set a min width to avoid seeing the horizontal scrollbar
         self.v_box.addWidget(self.list_widget)
         self.list_widget.itemPressed.connect(self.on_item_pressed)  # Clicked doesn't work
@@ -49,7 +45,7 @@ class DiaryListCompositeWidget(QtWidgets.QWidget):
         diary_entry_label = QtWidgets.QLabel("<h4>New diary entry</h4>")
         self.v_box.addWidget(diary_entry_label)
         # ..question
-        self.question_label = QtWidgets.QLabel("testing 1234")
+        self.question_label = QtWidgets.QLabel()
         self.v_box.addWidget(self.question_label)
         # ..labels
         labels_hbox = QtWidgets.QHBoxLayout()
@@ -64,26 +60,10 @@ class DiaryListCompositeWidget(QtWidgets.QWidget):
         self.dt_qpb = QtWidgets.QPushButton("Dharma talk")
         self.dt_qpb.setCheckable(True)
         labels_hbox.addWidget(self.dt_qpb)
+        labels_hbox.addStretch()
         # ..
         edit_diary_entry_hbox_l5 = QtWidgets.QHBoxLayout()
         self.v_box.addLayout(edit_diary_entry_hbox_l5)
-        # ..slider
-        self.renunciation_qslider = QtWidgets.QSlider()
-        self.renunciation_qslider.setOrientation(QtCore.Qt.Vertical)
-        self.renunciation_qslider.setFixedHeight(ADD_NEW_HEIGHT_IT)
-        edit_diary_entry_hbox_l5.addWidget(self.renunciation_qslider)
-        self.goodwill_qslider = QtWidgets.QSlider()
-        self.goodwill_qslider.setOrientation(QtCore.Qt.Vertical)
-        self.goodwill_qslider.setFixedHeight(ADD_NEW_HEIGHT_IT)
-        edit_diary_entry_hbox_l5.addWidget(self.goodwill_qslider)
-        self.harmlessness_qslider = QtWidgets.QSlider()
-        self.harmlessness_qslider.setOrientation(QtCore.Qt.Vertical)
-        self.harmlessness_qslider.setFixedHeight(ADD_NEW_HEIGHT_IT)
-        edit_diary_entry_hbox_l5.addWidget(self.harmlessness_qslider)
-        self.equanimity_qslider = QtWidgets.QSlider()
-        self.equanimity_qslider.setOrientation(QtCore.Qt.Vertical)
-        self.equanimity_qslider.setFixedHeight(ADD_NEW_HEIGHT_IT)
-        edit_diary_entry_hbox_l5.addWidget(self.equanimity_qslider)
         # ..text area
         self.adding_text_to_diary_textedit_w6 = QtWidgets.QTextEdit()
         edit_diary_entry_hbox_l5.addWidget(self.adding_text_to_diary_textedit_w6)
@@ -98,12 +78,6 @@ class DiaryListCompositeWidget(QtWidgets.QWidget):
         self.adding_to_diary_now_button = QtWidgets.QPushButton("Now/Today")
         self.adding_to_diary_now_button.pressed.connect(self.on_today_button_pressed)
         edit_diary_entry_vbox_l6.addWidget(self.adding_to_diary_now_button)
-
-
-
-
-
-
 
 
         self.adding_diary_entry_bn_w5 = QtWidgets.QPushButton("Add new diary entry")
@@ -192,20 +166,23 @@ class DiaryListCompositeWidget(QtWidgets.QWidget):
             # Setting up the display
             list_item = QtWidgets.QListWidgetItem()
             list_item.setData(QtCore.Qt.UserRole, diary_entry.id)  # to read: .data
-            row_layout_l7 = QtWidgets.QVBoxLayout()
+            row_layout_l7 = QtWidgets.QHBoxLayout()
             row_label_w8 = QtWidgets.QLabel(label_text_sg)
             ##row_label_w8.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Maximum)
             row_label_w8.setWordWrap(True)
+            row_layout_l7.addStretch()
             row_layout_l7.addWidget(row_label_w8)
-            row_label_w8_label = QtWidgets.QLabel("Label")
-            row_layout_l7.addWidget(row_label_w8_label)
+            row_layout_l7.addStretch()
+            ###row_label_w8_label = QtWidgets.QLabel("Label")
+            ###row_layout_l7.addWidget(row_label_w8_label)
             row_layout_l7.setContentsMargins(5, 5, 5, 5)
             # -if this is not set we will get a default that is big and looks strange for a list
             row_layout_l7.setSpacing(2)
             row_w6 = QtWidgets.QWidget()
             row_w6.setLayout(row_layout_l7)
             row_w6.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.MinimumExpanding)
-            row_w6.adjustSize()
+            ###row_w6.setMaximumWidth(490)
+            ###row_w6.adjustSize()
             list_item.setSizeHint(row_w6.sizeHint())
             self.list_widget.addItem(list_item)
             self.list_widget.setItemWidget(list_item, row_w6) # -http://doc.qt.io/qt-5/qlistwidget.html#setItemWidget

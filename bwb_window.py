@@ -7,7 +7,6 @@ import bwb_model
 import bwb_central
 import bwb_practice_details
 import bwb_practices
-import bwb_schedule
 import bwb_wisdom
 import bwb_help
 
@@ -40,30 +39,25 @@ class WellBeingWindow(QtWidgets.QMainWindow):
 
         # Initializing window
         self.setGeometry(40, 30, 1100, 700)
-        self.setWindowTitle("Buddhist Practice Diary [BWB prototype 2]")
+        self.showMaximized()
+        self.setWindowTitle("Buddhist Practice Diary [BWB prototype 3]")
         self.setWindowIcon(QtGui.QIcon("icon.png"))
 
         # Setup of widgets..
-        # ..habits/practices
-        practices_dock_qw2 = QtWidgets.QDockWidget("Practices", self)
-        practices_dock_qw2.setFeatures(
-            QtWidgets.QDockWidget.DockWidgetMovable |
-            QtWidgets.QDockWidget.DockWidgetFloatable)
-        self.practice_composite_w3 = bwb_practices.PracticeCompositeWidget()
-        self.practice_composite_w3.item_selection_changed_signal.connect(self.on_practice_item_selection_changed)
-        self.practice_composite_w3.current_row_changed_signal.connect(self.on_practice_current_row_changed)
-        self.practice_composite_w3.new_practice_button_pressed_signal.connect(
-            self.on_practice_new_button_pressed_signal)
-        practices_dock_qw2.setWidget(self.practice_composite_w3)
-        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, practices_dock_qw2)
 
-        # ..practice details
-        practice_details_dock_qw2 = QtWidgets.QDockWidget("Practice Details", self)
-        self.practice_details_composite_w3 = bwb_practice_details.PracticeCompositeWidget()
-        practice_details_dock_qw2.setWidget(self.practice_details_composite_w3)
-        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, practice_details_dock_qw2)
-        self.practice_details_composite_w3.time_of_day_state_changed_signal.connect(
-            self.on_practice_details_time_of_day_state_changed)
+        # ..calendar
+        calendar_dock_qw2 = QtWidgets.QDockWidget("Calendar", self)
+        self.calendar_w3 = QtWidgets.QCalendarWidget()
+        self.calendar_w3.setFixedHeight(200)
+        calendar_dock_qw2.setWidget(self.calendar_w3)
+        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, calendar_dock_qw2)
+        calendar_dock_qw2.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea)
+
+        # ..help
+        help_dock_qw2 = QtWidgets.QDockWidget("Help", self)
+        self.help_composite_w3 = bwb_help.HelpCompositeWidget()
+        help_dock_qw2.setWidget(self.help_composite_w3)
+        self.addDockWidget(QtCore.Qt.RightDockWidgetArea, help_dock_qw2)
 
         # ..diary
         ####self.diary_composite_w3 = bwb_diary.DiaryListCompositeWidget()
@@ -72,24 +66,12 @@ class WellBeingWindow(QtWidgets.QMainWindow):
         self.central_w3.qtabwidget.widget(0).context_menu_change_date_signal.connect(self.on_diary_context_menu_change_date)
         self.central_w3.qtabwidget.widget(0).context_menu_delete_signal.connect(self.on_diary_context_menu_delete)
         self.setCentralWidget(self.central_w3)
-        # ..schedule
-        schedule_dock_qw2 = QtWidgets.QDockWidget("Schedule for today", self)
-        self.schedule_composite_w3 = bwb_schedule.ScheduleCompositeWidget()
-        schedule_dock_qw2.setWidget(self.schedule_composite_w3)
-        ###schedule_dock_qw2.setFeatures(QtWidgets.QDockWidget.NoDockWidgetFeatures)
-        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, schedule_dock_qw2)
 
         # ..wisdom
         wisdom_dock_qw2 = QtWidgets.QDockWidget("Wisdom", self)
         self.wisdom_composite_w3 = bwb_wisdom.WisdomCompositeWidget()
         wisdom_dock_qw2.setWidget(self.wisdom_composite_w3)
-        self.addDockWidget(QtCore.Qt.RightDockWidgetArea, wisdom_dock_qw2)
-
-        # ..help
-        help_dock_qw2 = QtWidgets.QDockWidget("Help", self)
-        self.help_composite_w3 = bwb_help.HelpCompositeWidget()
-        help_dock_qw2.setWidget(self.help_composite_w3)
-        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, help_dock_qw2)
+        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, wisdom_dock_qw2)
 
         # ..blessings
         blessings_dock_qw2 = QtWidgets.QDockWidget("Blessings", self)
@@ -140,6 +122,13 @@ class WellBeingWindow(QtWidgets.QMainWindow):
         blessings_dock_qw2.setWidget(self.blessings_qlw)
         self.addDockWidget(QtCore.Qt.RightDockWidgetArea, blessings_dock_qw2)
 
+        # ..image
+        image_qll = QtWidgets.QLabel()
+        image_qll.setPixmap(QtGui.QPixmap("Gerald-G-Yoga-Poses-stylized-1-300px-CC0.png"))
+        image_dock_qw2 = QtWidgets.QDockWidget("Image", self)
+        image_dock_qw2.setWidget(image_qll)
+        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, image_dock_qw2)
+
         # Creating the menu bar..
         # ..setup of actions
         export_qaction = QtWidgets.QAction("Export", self)
@@ -156,8 +145,6 @@ class WellBeingWindow(QtWidgets.QMainWindow):
         ###inline_help_qaction.triggered.connect()
         backup_qaction = QtWidgets.QAction("Backup db", self)
         backup_qaction.triggered.connect(bwb_model.backup_db_file)
-        schedule_window_qaction = schedule_dock_qw2.toggleViewAction()
-        practice_details_window_qaction = practice_details_dock_qw2.toggleViewAction()
         wisdom_window_qaction = wisdom_dock_qw2.toggleViewAction()
         # ..adding menu items
         self.menu_bar = self.menuBar()
@@ -172,8 +159,6 @@ class WellBeingWindow(QtWidgets.QMainWindow):
         help_menu.addAction(about_qaction)
         help_menu.addAction(manual_qaction)
         help_menu.addAction(inline_help_qaction)
-        window_menu.addAction(schedule_window_qaction)
-        window_menu.addAction(practice_details_window_qaction)
         window_menu.addAction(wisdom_window_qaction)
 
         self.update_gui()
@@ -237,10 +222,7 @@ class WellBeingWindow(QtWidgets.QMainWindow):
 
     def update_gui(self, i_event_source = EventSource.undefined):
         if i_event_source == EventSource.practice_details:
-            self.schedule_composite_w3.update_gui()
             return
         if i_event_source != EventSource.obs_current_row_changed:
-            self.practice_composite_w3.update_gui()
+            pass
         self.central_w3.qtabwidget.widget(0).update_gui()  ### TODO: Fix .widget(0)
-        self.schedule_composite_w3.update_gui()
-

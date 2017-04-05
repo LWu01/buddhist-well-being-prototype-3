@@ -21,7 +21,7 @@ class PracticeCompositeWidget(QtWidgets.QWidget):
 
         # Creating widgets
         # ..for ten practices (left column)
-        habits_label = QtWidgets.QLabel("<h3>Habits/Practices</h3>")
+        habits_label = QtWidgets.QLabel("<h3>Journals</h3>")
         vbox.addWidget(habits_label)
         self.list_widget = QtWidgets.QListWidget()
         self.list_widget.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
@@ -33,7 +33,7 @@ class PracticeCompositeWidget(QtWidgets.QWidget):
         # ..for adding new habit
         self.adding_new_practice_ey = QtWidgets.QLineEdit()
         vbox.addWidget(self.adding_new_practice_ey)
-        self.adding_new_practice_bn = QtWidgets.QPushButton("Add new practice")
+        self.adding_new_practice_bn = QtWidgets.QPushButton("Add new journal")
         vbox.addWidget(self.adding_new_practice_bn)
         self.adding_new_practice_bn.clicked.connect(self.on_add_new_practice_button_pressed)
 
@@ -81,42 +81,7 @@ class PracticeCompositeWidget(QtWidgets.QWidget):
             row_i6 = QtWidgets.QListWidgetItem()
             row_layout_l7 = QtWidgets.QVBoxLayout()
 
-            # Updating frequency
-            total_number_week_list = []
-            today_date = datetime.date.today()
-            start_of_today_datetime = datetime.datetime(
-                year=today_date.year, month=today_date.month, day=today_date.day)
-            ####today_weekday_nr_it = datetime.datetime.now().weekday()
-            #start_weekday_it = today_weekday_nr_it  # (Ex: Monday in Sweden, Sunday in the US)
-            total_number_for_week_it = 0
-            for day_weekday_nr_it in range(0, 7):
-                check_box_sign_sg = "○"
-                start_of_day_datetime = start_of_today_datetime\
-                    - datetime.timedelta(days=today_date.weekday())\
-                    + datetime.timedelta(days=day_weekday_nr_it)
-                start_of_day_unixtime_it = int(start_of_day_datetime.timestamp())
-                t_diary_filtered_list = bwb_model.DiaryM.get_all_for_practice_and_day(
-                    practice_item.id, start_of_day_unixtime_it)
-                total_number_for_day_it = len(t_diary_filtered_list)
-                if total_number_for_day_it > 0:
-                    check_box_sign_sg = "●"
-                    total_number_for_week_it = total_number_for_week_it + 1
-                weekday_one_char_sg = datetime.datetime.fromtimestamp(start_of_day_unixtime_it).strftime("%A")[0:1]
-                total_number_week_list.append(check_box_sign_sg)  # t_weekday_one_char_sg.capitalize() +
-
-
-            # Experimental:
-            weekly_goal_reached_sg = ""
-            if total_number_for_week_it > 1:
-                weekly_goal_reached_sg = " ✔"
-
-
-            observance_short_formatted_sg = "" + practice_item.title + ""
-            row_label_w8 = QtWidgets.QLabel(
-                observance_short_formatted_sg
-                + "<br>" + ' '.join(x for x in total_number_week_list)
-                + weekly_goal_reached_sg
-            )
+            row_label_w8 = QtWidgets.QLabel(practice_item.title)
 
             row_label_w8.adjustSize()
             row_layout_l7.addWidget(row_label_w8)

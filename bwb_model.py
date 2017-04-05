@@ -2,6 +2,7 @@ import sqlite3
 import csv
 from shutil import copyfile
 import datetime
+import bwb_global
 
 #################
 #
@@ -417,14 +418,13 @@ class DiaryM:
         return ret_diary_lt
 
     @staticmethod
-    def get_all_for_today(i_reverse_bl=True):
-        today_date = datetime.date.today()
-        start_of_today_datetime = datetime.datetime(
-            year=today_date.year,
-            month=today_date.month,
-            day=today_date.day
+    def get_all_for_active_day(i_reverse_bl=True):
+        start_of_day_datetime = datetime.datetime(
+            year=bwb_global.active_date_qdate.year(),
+            month=bwb_global.active_date_qdate.month(),
+            day=bwb_global.active_date_qdate.day()
         )
-        start_of_day_unixtime_it = int(start_of_today_datetime.timestamp())
+        start_of_day_unixtime_it = int(start_of_day_datetime.timestamp())
 
         ret_diary_lt = []
         db_connection = DbHelperM.get_db_connection()

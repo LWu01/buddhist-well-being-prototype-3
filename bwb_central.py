@@ -14,7 +14,7 @@ class CentralWidget(QtWidgets.QWidget):
         super().__init__()
 
         self.qtabwidget = QtWidgets.QTabWidget()
-        self.qtabwidget.setTabPosition(QtWidgets.QTabWidget.West)
+        self.qtabwidget.setTabPosition(QtWidgets.QTabWidget.North)
         ##self.qtabwidget.setTabShape(QtWidgets.QTabWidget.Triangular)
         vbox_qtw = QtWidgets.QVBoxLayout(self)
         vbox_qtw.addWidget(self.qtabwidget)

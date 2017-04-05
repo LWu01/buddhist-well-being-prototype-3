@@ -33,62 +33,6 @@ class PracticeCompositeWidget(QtWidgets.QWidget):
         self.question_le.textChanged.connect(self.on_question_text_changed)
         vbox.addWidget(self.question_le)
 
-        self.time_of_day_label = QtWidgets.QLabel("<h4>Time of day</h4>")
-        vbox.addWidget(self.time_of_day_label)
-
-        hbox = QtWidgets.QHBoxLayout()
-        vbox.addLayout(hbox)
-        self.time_of_day_active_label = QtWidgets.QLabel("Active?")
-        hbox.addWidget(self.time_of_day_active_label)
-        self.time_of_day_active_qcb = QtWidgets.QCheckBox()
-        self.time_of_day_active_qcb.stateChanged.connect(self.on_time_of_day_statechanged)
-        hbox.addWidget(self.time_of_day_active_qcb)
-
-        self.time_of_day_timeedit = QtWidgets.QTimeEdit()
-        self.time_of_day_timeedit.setDisplayFormat("HH")
-        self.time_of_day_timeedit.timeChanged.connect(self.on_time_of_day_changed)
-        hbox.addWidget(self.time_of_day_timeedit)
-
-        days_in_week_hbox = QtWidgets.QHBoxLayout()
-        vbox.addLayout(days_in_week_hbox)
-
-        self.monday_qpb = QtWidgets.QPushButton("Mo")
-        self.monday_qpb.setCheckable(True)
-        self.monday_qpb.setFixedWidth(BUTTON_WIDTH_IT)
-        days_in_week_hbox.addWidget(self.monday_qpb)
-        self.tuesday_qpb = QtWidgets.QPushButton("Tu")
-        self.tuesday_qpb.setCheckable(True)
-        self.tuesday_qpb.setFixedWidth(BUTTON_WIDTH_IT)
-        days_in_week_hbox.addWidget(self.tuesday_qpb)
-        self.wednesday_qpb = QtWidgets.QPushButton("We")
-        self.wednesday_qpb.setCheckable(True)
-        self.wednesday_qpb.setFixedWidth(BUTTON_WIDTH_IT)
-        days_in_week_hbox.addWidget(self.wednesday_qpb)
-        self.thursday_qpb = QtWidgets.QPushButton("Th")
-        self.thursday_qpb.setCheckable(True)
-        self.thursday_qpb.setFixedWidth(BUTTON_WIDTH_IT)
-        days_in_week_hbox.addWidget(self.thursday_qpb)
-        self.friday_qpb = QtWidgets.QPushButton("Fr")
-        self.friday_qpb.setCheckable(True)
-        self.friday_qpb.setFixedWidth(BUTTON_WIDTH_IT)
-        days_in_week_hbox.addWidget(self.friday_qpb)
-        self.saturday_qpb = QtWidgets.QPushButton("Sa")
-        self.saturday_qpb.setCheckable(True)
-        self.saturday_qpb.setFixedWidth(BUTTON_WIDTH_IT)
-        days_in_week_hbox.addWidget(self.saturday_qpb)
-        self.sunday_qpb = QtWidgets.QPushButton("Su")
-        self.sunday_qpb.setCheckable(True)
-        self.sunday_qpb.setFixedWidth(BUTTON_WIDTH_IT)
-        days_in_week_hbox.addWidget(self.sunday_qpb)
-
-        """
-        button_group = QtWidgets.QButtonGroup()
-        button_group.setExclusive(False)
-        button_group.addButton(self.monday_qpb)
-        button_group.addButton(self.tuesday_qpb)
-        vbox.addWidget(button_group)
-        """
-
     def on_time_of_day_statechanged(self, i_new_checked_state):
         self.update_db_time()
 
@@ -140,19 +84,12 @@ class PracticeCompositeWidget(QtWidgets.QWidget):
         self.update_gui()
 
     def update_gui(self):
-        time_of_day_cb_was_blocked_bl = self.time_of_day_active_qcb.blockSignals(True)
-        time_of_day_timeedit_was_blocked_bl = self.time_of_day_timeedit.blockSignals(True)
+        ###time_of_day_cb_was_blocked_bl = self.time_of_day_active_qcb.blockSignals(True)
+        ###time_of_day_timeedit_was_blocked_bl = self.time_of_day_timeedit.blockSignals(True)
 
         practice = bwb_model.PracticesM.get(self.id_it)
         ##self.details_ll.setText(practice.description)
         self.question_le.setText(practice.question)
-        qtime = QtCore.QTime(0, 0)
-        if practice.time_of_day != bwb_model.TIME_NOT_SET:
-            qtime = QtCore.QTime(practice.time_of_day, 0)
-            self.time_of_day_active_qcb.setCheckState(QtCore.Qt.Checked)
-        else:
-            self.time_of_day_active_qcb.setCheckState(QtCore.Qt.Unchecked)
-        self.time_of_day_timeedit.setTime(qtime)  # move to update_gui???
 
-        self.time_of_day_active_qcb.blockSignals(time_of_day_cb_was_blocked_bl)
-        self.time_of_day_timeedit.blockSignals(time_of_day_timeedit_was_blocked_bl)
+        ###self.time_of_day_active_qcb.blockSignals(time_of_day_cb_was_blocked_bl)
+        ###self.time_of_day_timeedit.blockSignals(time_of_day_timeedit_was_blocked_bl)

@@ -3,18 +3,15 @@ from PyQt5 import QtGui
 from PyQt5 import QtCore
 
 import bwb_model
-####import bwb_diary
 import bwb_central
 import bwb_practice_details
 import bwb_practices
 import bwb_wisdom
 import bwb_help
+import bwb_calendar
+import bwb_global
 
-import time
-import datetime
 import enum
-import warnings
-import logging
 import sys
 
 
@@ -47,26 +44,47 @@ class WellBeingWindow(QtWidgets.QMainWindow):
 
         # ..calendar
         calendar_dock_qw2 = QtWidgets.QDockWidget("Calendar", self)
-        self.calendar_w3 = QtWidgets.QCalendarWidget()
-        self.calendar_w3.setFixedHeight(200)
-        calendar_dock_qw2.setWidget(self.calendar_w3)
+        self.custom_calendar_w3 = bwb_calendar.CustomCalendarWidget()
+        self.custom_calendar_w3.setFixedHeight(200)
+        calendar_dock_qw2.setWidget(self.custom_calendar_w3)
         self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, calendar_dock_qw2)
         calendar_dock_qw2.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea)
-        self.calendar_w3.selectionChanged.connect(self.on_calendar_selection_changed)
-        self.calendar_w3.setGridVisible(True)
-        date_qtextcharformat = QtGui.QTextCharFormat()
-        ###date_qtextcharformat.setFontItalic(True)
-        date_qtextcharformat.setFontWeight(QtGui.QFont.Bold)
-        self.calendar_w3.setDateTextFormat(QtCore.QDate(2017, 4, 27), date_qtextcharformat)
+        self.custom_calendar_w3.selectionChanged.connect(self.on_calendar_selection_changed)
+
+        # TODO: Next day with entry, previous day with entry, TODAY
+
+        # Setup of widgets..
+        # ..habits/practices
+        practices_dock_qw2 = QtWidgets.QDockWidget("Practices", self)
+        practices_dock_qw2.setFeatures(
+            QtWidgets.QDockWidget.DockWidgetMovable |
+            QtWidgets.QDockWidget.DockWidgetFloatable)
+        self.practice_composite_w3 = bwb_practices.PracticeCompositeWidget()
+        self.practice_composite_w3.item_selection_changed_signal.connect(self.on_practice_item_selection_changed)
+        self.practice_composite_w3.current_row_changed_signal.connect(self.on_practice_current_row_changed)
+        self.practice_composite_w3.new_practice_button_pressed_signal.connect(
+            self.on_practice_new_button_pressed_signal)
+        practices_dock_qw2.setWidget(self.practice_composite_w3)
+        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, practices_dock_qw2)
+
+        # ..practice details
+        practice_details_dock_qw2 = QtWidgets.QDockWidget("Journal Details", self)
+        self.practice_details_composite_w3 = bwb_practice_details.PracticeCompositeWidget()
+        practice_details_dock_qw2.setWidget(self.practice_details_composite_w3)
+        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, practice_details_dock_qw2)
+        self.practice_details_composite_w3.time_of_day_state_changed_signal.connect(
+            self.on_practice_details_time_of_day_state_changed)
 
         # ..quotes
-        # TODO: A stackedwidget, perhaps with two arrows above for going back and forward (or just one to switch randomly)
+        # TODO: A stackedwidget, perhaps with two arrows above for going back and fwd (or just one to switch randomly)
 
+        """
         # ..help
         help_dock_qw2 = QtWidgets.QDockWidget("Help", self)
         self.help_composite_w3 = bwb_help.HelpCompositeWidget()
         help_dock_qw2.setWidget(self.help_composite_w3)
-        self.addDockWidget(QtCore.Qt.RightDockWidgetArea, help_dock_qw2)
+        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, help_dock_qw2)
+        """
 
         # ..diary
         ####self.diary_composite_w3 = bwb_diary.DiaryListCompositeWidget()
@@ -80,7 +98,8 @@ class WellBeingWindow(QtWidgets.QMainWindow):
         wisdom_dock_qw2 = QtWidgets.QDockWidget("Wisdom", self)
         self.wisdom_composite_w3 = bwb_wisdom.WisdomCompositeWidget()
         wisdom_dock_qw2.setWidget(self.wisdom_composite_w3)
-        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, wisdom_dock_qw2)
+        self.addDockWidget(QtCore.Qt.RightDockWidgetArea, wisdom_dock_qw2)
+        wisdom_dock_qw2.setAllowedAreas(QtCore.Qt.RightDockWidgetArea)
 
         # ..blessings
         blessings_dock_qw2 = QtWidgets.QDockWidget("Blessings", self)
@@ -131,12 +150,14 @@ class WellBeingWindow(QtWidgets.QMainWindow):
         blessings_dock_qw2.setWidget(self.blessings_qlw)
         self.addDockWidget(QtCore.Qt.RightDockWidgetArea, blessings_dock_qw2)
 
+        """
         # ..image
         image_qll = QtWidgets.QLabel()
         image_qll.setPixmap(QtGui.QPixmap("Gerald-G-Yoga-Poses-stylized-1-300px-CC0.png"))
         image_dock_qw2 = QtWidgets.QDockWidget("Image", self)
         image_dock_qw2.setWidget(image_qll)
         self.addDockWidget(QtCore.Qt.RightDockWidgetArea, image_dock_qw2)
+        """
 
         # Creating the menu bar..
         # ..setup of actions
@@ -174,7 +195,9 @@ class WellBeingWindow(QtWidgets.QMainWindow):
         self.show()
 
     def on_calendar_selection_changed(self):
-        print(str(self.calendar_w3.selectedDate()))
+        print(str(self.custom_calendar_w3.selectedDate()))
+        bwb_global.active_date_qdate = self.custom_calendar_w3.selectedDate()
+        self.update_gui()
 
     def on_practice_details_time_of_day_state_changed(self):
         self.update_gui(EventSource.practice_details)
@@ -243,5 +266,8 @@ class WellBeingWindow(QtWidgets.QMainWindow):
         if i_event_source == EventSource.practice_details:
             return
         if i_event_source != EventSource.obs_current_row_changed:
-            pass
+            self.practice_composite_w3.update_gui()
+
         self.central_w3.qtabwidget.widget(0).update_gui()  ### TODO: Fix .widget(0)
+
+        self.custom_calendar_w3.update_gui()

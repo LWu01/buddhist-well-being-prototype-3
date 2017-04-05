@@ -52,7 +52,15 @@ class WellBeingWindow(QtWidgets.QMainWindow):
         calendar_dock_qw2.setWidget(self.calendar_w3)
         self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, calendar_dock_qw2)
         calendar_dock_qw2.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea)
-        #self.calendar_w3.
+        self.calendar_w3.selectionChanged.connect(self.on_calendar_selection_changed)
+        self.calendar_w3.setGridVisible(True)
+        date_qtextcharformat = QtGui.QTextCharFormat()
+        ###date_qtextcharformat.setFontItalic(True)
+        date_qtextcharformat.setFontWeight(QtGui.QFont.Bold)
+        self.calendar_w3.setDateTextFormat(QtCore.QDate(2017, 4, 27), date_qtextcharformat)
+
+        # ..quotes
+        # TODO: A stackedwidget, perhaps with two arrows above for going back and forward (or just one to switch randomly)
 
         # ..help
         help_dock_qw2 = QtWidgets.QDockWidget("Help", self)
@@ -164,6 +172,9 @@ class WellBeingWindow(QtWidgets.QMainWindow):
 
         self.update_gui()
         self.show()
+
+    def on_calendar_selection_changed(self):
+        print(str(self.calendar_w3.selectedDate()))
 
     def on_practice_details_time_of_day_state_changed(self):
         self.update_gui(EventSource.practice_details)

@@ -52,6 +52,7 @@ class WellBeingWindow(QtWidgets.QMainWindow):
         calendar_dock_qw2.setWidget(self.calendar_w3)
         self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, calendar_dock_qw2)
         calendar_dock_qw2.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea)
+        #self.calendar_w3.
 
         # ..help
         help_dock_qw2 = QtWidgets.QDockWidget("Help", self)
@@ -127,7 +128,7 @@ class WellBeingWindow(QtWidgets.QMainWindow):
         image_qll.setPixmap(QtGui.QPixmap("Gerald-G-Yoga-Poses-stylized-1-300px-CC0.png"))
         image_dock_qw2 = QtWidgets.QDockWidget("Image", self)
         image_dock_qw2.setWidget(image_qll)
-        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, image_dock_qw2)
+        self.addDockWidget(QtCore.Qt.RightDockWidgetArea, image_dock_qw2)
 
         # Creating the menu bar..
         # ..setup of actions
@@ -195,6 +196,12 @@ class WellBeingWindow(QtWidgets.QMainWindow):
         self.update_gui()
 
     def on_diary_add_entry_button_pressed(self, i_text_sg, i_unix_time_it):
+
+        print("t_unix_time_it = " + str(i_unix_time_it))
+        bwb_model.DiaryM.add(i_unix_time_it, i_text_sg, 1)  # TODO: Change from 1
+        self.update_gui()
+        self.central_w3.qtabwidget.widget(0).adding_text_to_diary_textedit_w6.clear()
+        """
         practice_selected_item_list = self.practice_composite_w3.list_widget.selectedItems()
         if practice_selected_item_list is not None and len(practice_selected_item_list) > 0:
             practice_current_item = self.practice_composite_w3.list_widget.currentItem()
@@ -202,7 +209,7 @@ class WellBeingWindow(QtWidgets.QMainWindow):
             if practice_current_item is not None:
                 practice_current_item_id = self.practice_composite_w3.list_widget.currentItem().data(QtCore.Qt.UserRole)
             print("t_unix_time_it = " + str(i_unix_time_it))
-            bwb_model.DiaryM.add(i_unix_time_it, i_text_sg, practice_current_item_id)
+            bwb_model.DiaryM.add(i_unix_time_it, i_text_sg, 1)  # TODO: Change from 1
             self.update_gui()
             self.central_w3.qtabwidget.widget(0).adding_text_to_diary_textedit_w6.clear()
         else:
@@ -210,6 +217,7 @@ class WellBeingWindow(QtWidgets.QMainWindow):
                 self, "New Diary Entry Message",
                 ("Please select at least one observance before adding a new diary entry")
             )
+        """
 
     def show_about_box(self):
         message_box = QtWidgets.QMessageBox.about(

@@ -1,8 +1,9 @@
 
-
 import bwb_diary
+
 import datetime
 import time
+
 from PyQt5 import QtWidgets
 from PyQt5 import QtCore
 from PyQt5 import QtGui
@@ -21,13 +22,17 @@ class CentralWidget(QtWidgets.QWidget):
         self.setLayout(vbox_qtw)
         diary_widget = bwb_diary.DiaryListCompositeWidget()
 
+        self.qtabwidget.addTab(diary_widget, "All")
+        self.qtabwidget.addTab(QtWidgets.QWidget(), "Gratitude")
+
+        """
         self.qtabwidget.addTab(diary_widget, "Living situation etc")
         self.qtabwidget.addTab(QtWidgets.QWidget(), "Gratitude \"Happy Snail\"")
         self.qtabwidget.addTab(QtWidgets.QWidget(), "Natural world")
         self.qtabwidget.addTab(QtWidgets.QWidget(), "Successes")
         self.qtabwidget.addTab(QtWidgets.QWidget(), "Music")
         self.qtabwidget.addTab(QtWidgets.QWidget(), "Self-compassion")
-
+        """
 
         """
         self.qtabwidget.addTab(diary_widget, "Practices")
@@ -44,3 +49,4 @@ class CentralWidget(QtWidgets.QWidget):
 
 
         ### self.qtabwidget.addTab(diary_widget, "Diary 1234567890")
+

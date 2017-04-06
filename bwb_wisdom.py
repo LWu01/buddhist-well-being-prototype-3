@@ -9,28 +9,67 @@ class WisdomCompositeWidget(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
 
-        self.qtoolbox = QtWidgets.QToolBox()
+        self.qtreewidget = QtWidgets.QTreeWidget()
         vbox = QtWidgets.QVBoxLayout()
-        vbox.addWidget(self.qtoolbox)
+        vbox.addWidget(self.qtreewidget)
         self.setLayout(vbox)
 
-        self.four_right_efforts_qlw = QtWidgets.QListWidget()
-        self.four_right_efforts_qlw.addItems(["1", "2", "3", "4"])
-        self.qtoolbox.addItem(self.four_right_efforts_qlw, "Four Right Efforts")
+        self.qtreewidget.setColumnCount(2)
+        self.qtreewidget.setHeaderLabels(["Wisdom"])
+        self.qtreewidget.setItemsExpandable(True)
 
-        self.four_est_mindfulness_qlw = QtWidgets.QListWidget()
-        self.four_est_mindfulness_qlw.addItems(["Body", "Feelings", "Mind", "Objects of Mind"])
-        self.qtoolbox.addItem(self.four_est_mindfulness_qlw, "Four Est. of Mindfulness")
+        efforts_qtwi = QtWidgets.QTreeWidgetItem(self.qtreewidget, ["Four Right Efforts"])
+        efforts_first_qtwi = QtWidgets.QTreeWidgetItem(efforts_qtwi, ["First"])
+        efforts_second_qtwi = QtWidgets.QTreeWidgetItem(efforts_qtwi, ["Second"])
 
-        self.four_immeasurable_minds_qlw = QtWidgets.QListWidget()
-        self.four_immeasurable_minds_qlw.addItems(["Loving Kindness", "Compassion", "Sympathetic Joy", "Equanimity"])
-        self.qtoolbox.addItem(self.four_immeasurable_minds_qlw, "Four Immeasurable Minds")
+        self.qtreewidget.setItemWidget(efforts_first_qtwi, 1, QtWidgets.QPushButton("Filter"))
 
-        self.noble_eightfold_path_qlw = QtWidgets.QListWidget()
-        self.noble_eightfold_path_qlw.addItems(
-            ["Right View", "Right Thinking (Intention)", "Right Speech", "Right Action",
-             "Right Livelihood", "Right Diligence (Effort)", "Right Mindfulness", "Right Concentration"])
-        self.qtoolbox.addItem(self.noble_eightfold_path_qlw, "Noble Eightfold Path")
+
+
+
+
+        four_est_mindfulness_qtwi = QtWidgets.QTreeWidgetItem(self.qtreewidget, ["Four Est. of Mindfulness"])
+        four_est_mindfulness_body_qtwi = QtWidgets.QTreeWidgetItem(four_est_mindfulness_qtwi, ["Body"])
+        four_est_mindfulness_feelings_qtwi = QtWidgets.QTreeWidgetItem(four_est_mindfulness_qtwi, ["Feelings"])
+        four_est_mindfulness_mind_qtwi = QtWidgets.QTreeWidgetItem(four_est_mindfulness_qtwi, ["Mind"])
+        four_est_mindfulness_objects_qtwi = QtWidgets.QTreeWidgetItem(four_est_mindfulness_qtwi, ["Objects of Mind"])
+
+        four_immeasurable_minds_qtwi = QtWidgets.QTreeWidgetItem(self.qtreewidget, ["Four Immeasurable Minds"])
+        four_immeasurable_kindness_qtwi = QtWidgets.QTreeWidgetItem(four_immeasurable_minds_qtwi, ["Loving Kindness"])
+        four_immeasurable_compassion_qtwi = QtWidgets.QTreeWidgetItem(four_immeasurable_minds_qtwi, ["Compassion"])
+        four_immeasurable_joy_qtwi = QtWidgets.QTreeWidgetItem(four_immeasurable_minds_qtwi, ["Sympathetic Joy"])
+        four_immeasurable_equanimity_qtwi = QtWidgets.QTreeWidgetItem(four_immeasurable_minds_qtwi, ["Equanimity"])
+
+
+
+        noble_eightfold_path_qtwi = QtWidgets.QTreeWidgetItem(self.qtreewidget, ["Noble Eightfold Path"])
+        noble_eightfold_path_view_qtwi = QtWidgets.QTreeWidgetItem(noble_eightfold_path_qtwi, ["Right View"])
+        noble_eightfold_path_thinking_qtwi = QtWidgets.QTreeWidgetItem(noble_eightfold_path_qtwi, ["Right Thinking"])
+        noble_eightfold_path_speech_qtwi = QtWidgets.QTreeWidgetItem(noble_eightfold_path_qtwi, ["Right Speech"])
+        noble_eightfold_path_action_qtwi = QtWidgets.QTreeWidgetItem(noble_eightfold_path_qtwi, ["Right Action"])
+        noble_eightfold_path_livelihood_qtwi = QtWidgets.QTreeWidgetItem(noble_eightfold_path_qtwi, ["Right Livelihood"])
+        noble_eightfold_path_effort_qtwi = QtWidgets.QTreeWidgetItem(noble_eightfold_path_qtwi, ["Right Effort (Diligence)"])
+        noble_eightfold_path_mindfulness_qtwi = QtWidgets.QTreeWidgetItem(noble_eightfold_path_qtwi, ["Right Mindfulness"])
+        noble_eightfold_path_concentration_qtwi = QtWidgets.QTreeWidgetItem(noble_eightfold_path_qtwi, ["Right Concentration"])
+
+
+
+        four_noble_truths_qtwi = QtWidgets.QTreeWidgetItem(self.qtreewidget, ["Four Noble Truths"])
+        four_noble_truths_suffering_qtwi = QtWidgets.QTreeWidgetItem(four_noble_truths_qtwi, ["Suffering"])
+        four_noble_truths_causes_qtwi = QtWidgets.QTreeWidgetItem(four_noble_truths_qtwi, ["Causes of Suffering"])
+        four_noble_truths_cessation_qtwi = QtWidgets.QTreeWidgetItem(four_noble_truths_qtwi, ["Cessation of Suffering"])
+        four_noble_truths_path_qtwi = QtWidgets.QTreeWidgetItem(four_noble_truths_qtwi, ["Path to the Cessaction of Suffering"])
+
+
+
+
+        self.qtreewidget.expandAll()
+        self.qtreewidget.resizeColumnToContents(0)
+        self.qtreewidget.resizeColumnToContents(1)
+
+
+        self.qtoolbox = QtWidgets.QToolBox()
+
 
         self.four_noble_truths_qlw = QtWidgets.QListWidget()
         self.four_noble_truths_qlw.addItems(

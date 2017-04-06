@@ -67,7 +67,7 @@ def initial_schema_and_setup(i_db_conn):
 
     # Adding observances
     observances_lt = [
-        ("Meditation", "longer description here", "Did I practice meditation today?"),
+        ("Nourishment", "longer description here", "Did I practice meditation today?"),
         ("Tai Chi or mindful movements", "", "Did I practice Tai Chi or did I do mindful movements?"),
         ("Dharma talk", "", "Did I listen to a Dharma talk?")
     ]

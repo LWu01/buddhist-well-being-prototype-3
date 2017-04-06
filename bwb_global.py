@@ -6,6 +6,13 @@ from PyQt5 import QtGui
 
 active_date_qdate = QtCore.QDate.currentDate()
 
+
+def qdate_to_unixtime(i_qdate: QtCore.QDate) -> int:
+    qdatetime = QtCore.QDateTime(i_qdate)
+    unixtime_it = qdatetime.toMSecsSinceEpoch() // 1000
+    return unixtime_it
+
+
 """
 def get_active_date():
     global active_date

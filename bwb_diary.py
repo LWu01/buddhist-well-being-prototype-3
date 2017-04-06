@@ -1,3 +1,4 @@
+import bwb_global
 import bwb_model
 import bwb_date_time_dialog
 import datetime
@@ -45,16 +46,7 @@ class DiaryListCompositeWidget(QtWidgets.QWidget):
 
         MY_WIDGET_NAME = "test-name"
         self.my_widget_w5.setObjectName(MY_WIDGET_NAME)
-        self.my_widget_w5.setStyleSheet("#" + MY_WIDGET_NAME
-                                        +"{" + "background-image:url(\"Gerald-G-Yoga-Poses-stylized-1-300px-CC0.png\"); background-position:center; background-repeat:no-repeat" + "}")
-
-        """
-        background_qpm = QtGui.QPixmap("Gerald-G-Yoga-Poses-stylized-1-300px-CC0.png")
-        background_qpm = background_qpm.scaled(self.my_widget_w4.size(), QtCore.Qt.KeepAspectRatioByExpanding)
-        palette_qpe = QtGui.QPalette()
-        palette_qpe.setBrush(QtGui.QPalette.Background, QtGui.QBrush(background_qpm))
-        self.my_widget_w4.setPalette(palette_qpe)
-        """
+        self.my_widget_w5.setStyleSheet("#" + MY_WIDGET_NAME +"{" + "background-image:url(\"Gerald-G-Yoga-Poses-stylized-1-300px-CC0.png\"); background-position:center; background-repeat:no-repeat" + "}")
 
         ###self.list_widget.itemPressed.connect(self.on_item_pressed)  # Clicked doesn't work
         ###self.list_widget.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
@@ -205,8 +197,11 @@ class DiaryListCompositeWidget(QtWidgets.QWidget):
 
     def on_add_text_to_diary_button_clicked(self):
         notes_sg = self.adding_text_to_diary_textedit_w6.toPlainText().strip()
-        time_qdatetime = self.adding_to_diary_date_datetimeedit_w6.dateTime()
-        unix_time_it = time_qdatetime.toMSecsSinceEpoch() // 1000
+        if bwb_global.active_date_qdate == QtCore.QDate.currentDate():
+            time_qdatetime = QtCore.QDateTime.currentDateTime()
+            unix_time_it = time_qdatetime.toMSecsSinceEpoch() // 1000
+        else:
+            unix_time_it = bwb_global.qdate_to_unixtime(bwb_global.active_date_qdate)
         self.add_text_to_diary_button_pressed_signal.emit(notes_sg, unix_time_it)
         # TODO: Change time
 

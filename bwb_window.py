@@ -3,7 +3,7 @@ from PyQt5 import QtGui
 from PyQt5 import QtCore
 
 import bwb_model
-import bwb_central
+import bwb_central_tabs
 import bwb_practice_details
 import bwb_practices
 import bwb_wisdom
@@ -88,10 +88,7 @@ class WellBeingWindow(QtWidgets.QMainWindow):
 
         # ..diary
         ####self.diary_composite_w3 = bwb_diary.DiaryListCompositeWidget()
-        self.central_w3 = bwb_central.CustomTabWidget()
-        self.central_w3.widget(0).add_text_to_diary_button_pressed_signal.connect(self.on_diary_add_entry_button_pressed)
-        self.central_w3.widget(0).context_menu_change_date_signal.connect(self.on_diary_context_menu_change_date)
-        self.central_w3.widget(0).context_menu_delete_signal.connect(self.on_diary_context_menu_delete)
+        self.central_w3 = bwb_central_tabs.CustomTabWidget()
         self.setCentralWidget(self.central_w3)
 
         # ..wisdom
@@ -202,12 +199,6 @@ class WellBeingWindow(QtWidgets.QMainWindow):
     def on_practice_details_time_of_day_state_changed(self):
         self.update_gui(EventSource.practice_details)
 
-    def on_diary_context_menu_change_date(self):
-        self.update_gui()
-
-    def on_diary_context_menu_delete(self):
-        self.update_gui()
-
     def on_practice_current_row_changed(self, i_current_practice_row_it):
         self.update_gui(EventSource.obs_current_row_changed)
 
@@ -229,29 +220,6 @@ class WellBeingWindow(QtWidgets.QMainWindow):
         bwb_model.ReminderM.add(i_practice_text_sg)
         self.update_gui()
 
-    def on_diary_add_entry_button_pressed(self, i_text_sg, i_unix_time_it):
-
-        print("t_unix_time_it = " + str(i_unix_time_it))
-        bwb_model.DiaryM.add(i_unix_time_it, i_text_sg, 1)  # TODO: Change from 1
-        self.update_gui()
-        self.central_w3.qtabwidget.widget(0).adding_text_to_diary_textedit_w6.clear()
-        """
-        practice_selected_item_list = self.practice_composite_w3.list_widget.selectedItems()
-        if practice_selected_item_list is not None and len(practice_selected_item_list) > 0:
-            practice_current_item = self.practice_composite_w3.list_widget.currentItem()
-            practice_current_item_id = -1
-            if practice_current_item is not None:
-                practice_current_item_id = self.practice_composite_w3.list_widget.currentItem().data(QtCore.Qt.UserRole)
-            print("t_unix_time_it = " + str(i_unix_time_it))
-            bwb_model.DiaryM.add(i_unix_time_it, i_text_sg, 1)  # TODO: Change from 1
-            self.update_gui()
-            self.central_w3.qtabwidget.widget(0).adding_text_to_diary_textedit_w6.clear()
-        else:
-            message_box = QtWidgets.QMessageBox.information(
-                self, "New Diary Entry Message",
-                ("Please select at least one observance before adding a new diary entry")
-            )
-        """
 
     def show_about_box(self):
         message_box = QtWidgets.QMessageBox.about(
@@ -268,6 +236,6 @@ class WellBeingWindow(QtWidgets.QMainWindow):
         if i_event_source != EventSource.obs_current_row_changed:
             self.practice_composite_w3.update_gui()
 
-        self.central_w3.widget(0).update_gui()  ### TODO: Fix .widget(0)
+        self.central_w3.update_gui()
 
         self.custom_calendar_w3.update_gui()

@@ -26,7 +26,8 @@ import bwb_global
 #
 #################
 
-DATABASE_FILE_NAME = "bwb_database_file.db"
+#DATABASE_FILE_NAME = "bwb_database_file.db"
+DATABASE_FILE_NAME = ":memory:"
 DEFAULT_DAYS_BEFORE_NOTIFICATION = 4
 NO_NOTIFICATION = -1
 SQLITE_FALSE = 0
@@ -294,11 +295,12 @@ class ReminderM:
 
 
 class DiaryM:
-    def __init__(self, i_id, i_date_added_it, i_diary_text="", i_practice_ref_it=-1):
+    def __init__(self, i_id, i_date_added_it, i_diary_text="", i_journal_ref_it=-1, i_practice_ref_it=-1):
         self.id = i_id
         self.date_added_it = i_date_added_it
         self.diary_text = i_diary_text
         self.practice_ref_it = i_practice_ref_it
+        self.journal_ref_it = i_journal_ref_it
 
     @staticmethod
     def add(i_date_added_it, i_diary_text, i_journal_ref_it):
@@ -417,6 +419,33 @@ class DiaryM:
             "SELECT * FROM " + DbSchemaM.DiaryTable.name
             + " WHERE " + DbSchemaM.DiaryTable.Cols.date_added + ">=" + str(start_of_day_unixtime_it)
             + " AND " + DbSchemaM.DiaryTable.Cols.date_added + "<" + str(start_of_day_unixtime_it + 24 * 3600)
+        )
+        diary_db_te_list = db_cursor_result.fetchall()
+        for diary_db_te in diary_db_te_list:
+            ret_diary_list.append(DiaryM(*diary_db_te))
+        db_connection.commit()
+
+        if i_reverse_bl:
+            ret_diary_list.reverse()
+        return ret_diary_list
+
+    @staticmethod
+    def get_all_for_active_day_and_journal(i_journal_id_it, i_reverse_bl=True):
+        start_of_day_datetime = datetime.datetime(
+            year=bwb_global.active_date_qdate.year(),
+            month=bwb_global.active_date_qdate.month(),
+            day=bwb_global.active_date_qdate.day()
+        )
+        start_of_day_unixtime_it = int(start_of_day_datetime.timestamp())
+
+        ret_diary_list = []
+        db_connection = DbHelperM.get_db_connection()
+        db_cursor = db_connection.cursor()
+        db_cursor_result = db_cursor.execute(
+            "SELECT * FROM " + DbSchemaM.DiaryTable.name
+            + " WHERE " + DbSchemaM.DiaryTable.Cols.date_added + ">=" + str(start_of_day_unixtime_it)
+            + " AND " + DbSchemaM.DiaryTable.Cols.date_added + "<" + str(start_of_day_unixtime_it + 24 * 3600)
+            + " AND " + DbSchemaM.DiaryTable.Cols.journal_ref + "=" + str(i_journal_id_it)
         )
         diary_db_te_list = db_cursor_result.fetchall()
         for diary_db_te in diary_db_te_list:

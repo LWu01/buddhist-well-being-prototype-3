@@ -50,6 +50,7 @@ class WellBeingWindow(QtWidgets.QMainWindow):
         self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, calendar_dock_qw2)
         calendar_dock_qw2.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea)
         self.custom_calendar_w3.selectionChanged.connect(self.on_calendar_selection_changed)
+        calendar_dock_qw2.setFeatures(QtWidgets.QDockWidget.NoDockWidgetFeatures)
 
         # TODO: Next day with entry, previous day with entry, TODAY
 
@@ -177,6 +178,7 @@ class WellBeingWindow(QtWidgets.QMainWindow):
         backup_qaction = QtWidgets.QAction("Backup db", self)
         backup_qaction.triggered.connect(bwb_model.backup_db_file)
         wisdom_window_qaction = wisdom_dock_qw2.toggleViewAction()
+        blessings_window_qaction = blessings_dock_qw2.toggleViewAction()
         # ..adding menu items
         self.menu_bar = self.menuBar()
         file_menu = self.menu_bar.addMenu("&File")
@@ -191,6 +193,7 @@ class WellBeingWindow(QtWidgets.QMainWindow):
         help_menu.addAction(manual_qaction)
         help_menu.addAction(inline_help_qaction)
         window_menu.addAction(wisdom_window_qaction)
+        window_menu.addAction(blessings_window_qaction)
 
         self.update_gui()
         self.show()

@@ -54,6 +54,7 @@ class WellBeingWindow(QtWidgets.QMainWindow):
         # TODO: Next day with entry, previous day with entry, TODAY
 
         # Setup of widgets..
+        """
         # ..habits/practices
         practices_dock_qw2 = QtWidgets.QDockWidget("Practices", self)
         practices_dock_qw2.setFeatures(
@@ -66,7 +67,9 @@ class WellBeingWindow(QtWidgets.QMainWindow):
             self.on_practice_new_button_pressed_signal)
         practices_dock_qw2.setWidget(self.practice_composite_w3)
         self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, practices_dock_qw2)
+        """
 
+        """
         # ..practice details
         practice_details_dock_qw2 = QtWidgets.QDockWidget("Journal Details", self)
         self.practice_details_composite_w3 = bwb_practice_details.PracticeCompositeWidget()
@@ -74,6 +77,7 @@ class WellBeingWindow(QtWidgets.QMainWindow):
         self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, practice_details_dock_qw2)
         self.practice_details_composite_w3.time_of_day_state_changed_signal.connect(
             self.on_practice_details_time_of_day_state_changed)
+        """
 
         # ..quotes
         # TODO: A stackedwidget, perhaps with two arrows above for going back and fwd (or just one to switch randomly)
@@ -145,7 +149,7 @@ class WellBeingWindow(QtWidgets.QMainWindow):
         ###self.qstack.addItem(self.blessings_qlw, "Blessings")
         ###self.blessings_composite_w3 = bwb_wisdom.BlessingsCompositeWidget()
         blessings_dock_qw2.setWidget(self.blessings_qlw)
-        self.addDockWidget(QtCore.Qt.RightDockWidgetArea, blessings_dock_qw2)
+        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, blessings_dock_qw2)
 
         """
         # ..image
@@ -234,7 +238,8 @@ class WellBeingWindow(QtWidgets.QMainWindow):
         if i_event_source == EventSource.practice_details:
             return
         if i_event_source != EventSource.obs_current_row_changed:
-            self.practice_composite_w3.update_gui()
+            pass
+            ##self.practice_composite_w3.update_gui()
 
         self.central_w3.update_gui()
 

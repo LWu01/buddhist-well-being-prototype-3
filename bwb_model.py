@@ -1,7 +1,9 @@
 import sqlite3
 import csv
-from shutil import copyfile
+import shutil
 import datetime
+from typing import List
+
 import bwb_global
 
 #################
@@ -30,6 +32,7 @@ NO_NOTIFICATION = -1
 SQLITE_FALSE = 0
 SQLITE_TRUE = 1
 TIME_NOT_SET = -1
+NO_REFERENCE = -1
 
 
 def get_schema_version(i_db_conn):
@@ -44,40 +47,61 @@ def set_schema_version(i_db_conn, i_version_it):
 # Auto-increment is not needed in our case: https://www.sqlite.org/autoinc.html
 def initial_schema_and_setup(i_db_conn):
     i_db_conn.execute(
-        "CREATE TABLE " + DbSchemaM.PracticesTable.name + "("
-        + DbSchemaM.PracticesTable.Cols.id + " INTEGER PRIMARY KEY" + ", "
-        + DbSchemaM.PracticesTable.Cols.title + " TEXT" + " NOT NULL" + ", "
-        + DbSchemaM.PracticesTable.Cols.description + " TEXT" + ", "
-        + DbSchemaM.PracticesTable.Cols.user_text + " TEXT DEFAULT ''" + ", "
-        + DbSchemaM.PracticesTable.Cols.question + " TEXT DEFAULT ''" + ", "
-        + DbSchemaM.PracticesTable.Cols.time_of_day + " INTEGER DEFAULT " + str(TIME_NOT_SET)
+        "CREATE TABLE " + DbSchemaM.JournalTable.name + "("
+        + DbSchemaM.JournalTable.Cols.id + " INTEGER PRIMARY KEY, "
+        + DbSchemaM.JournalTable.Cols.title + " TEXT NOT NULL"
+        + ")"
+    )
+    i_db_conn.execute(
+        "CREATE TABLE " + DbSchemaM.ReminderTable.name + "("
+        + DbSchemaM.ReminderTable.Cols.id + " INTEGER PRIMARY KEY, "
+        + DbSchemaM.ReminderTable.Cols.title + " TEXT NOT NULL, "
+        + DbSchemaM.ReminderTable.Cols.description + " TEXT DEFAULT '', "
+        + DbSchemaM.ReminderTable.Cols.archived + " INTEGER DEFAULT " + str(SQLITE_FALSE) + ", "
+        + DbSchemaM.ReminderTable.Cols.journal_ref
+        + " INTEGER REFERENCES " + DbSchemaM.JournalTable.name
+        + "(" + DbSchemaM.JournalTable.Cols.id + ")"
+        + " NOT NULL"
         + ")"
     )
     i_db_conn.execute(
         "CREATE TABLE " + DbSchemaM.DiaryTable.name + "("
-        + DbSchemaM.DiaryTable.Cols.id + " INTEGER PRIMARY KEY" + ", "
-        + DbSchemaM.DiaryTable.Cols.date_added + " INTEGER" + ", "
-        + DbSchemaM.DiaryTable.Cols.diary_text + " TEXT" + ", "
-        + DbSchemaM.DiaryTable.Cols.practices_ref
-            + " INTEGER REFERENCES " + DbSchemaM.PracticesTable.name
-            + "(" + DbSchemaM.PracticesTable.Cols.id + ")"
-            + " NOT NULL"
+        + DbSchemaM.DiaryTable.Cols.id + " INTEGER PRIMARY KEY, "
+        + DbSchemaM.DiaryTable.Cols.date_added + " INTEGER, "
+        + DbSchemaM.DiaryTable.Cols.diary_text + " TEXT, "
+        + DbSchemaM.DiaryTable.Cols.journal_ref
+        + " INTEGER REFERENCES " + DbSchemaM.JournalTable.name
+        + "(" + DbSchemaM.JournalTable.Cols.id + ")"
+        + " NOT NULL" + ", "
+        + DbSchemaM.DiaryTable.Cols.reminder_ref
+        + " INTEGER REFERENCES " + DbSchemaM.ReminderTable.name
+        + "(" + DbSchemaM.ReminderTable.Cols.id + ")"
+        + " DEFAULT " + str(NO_REFERENCE)
         + ")"
     )
 
-    # Adding observances
-    observances_lt = [
-        ("Nourishment", "longer description here", "Did I practice meditation today?"),
-        ("Tai Chi or mindful movements", "", "Did I practice Tai Chi or did I do mindful movements?"),
-        ("Dharma talk", "", "Did I listen to a Dharma talk?")
+    journal_list = [
+        ("Gratitude",),
+        ("Virtue",)
     ]
     i_db_conn.executemany(
-        "INSERT INTO " + DbSchemaM.PracticesTable.name + " ("
-        + DbSchemaM.PracticesTable.Cols.title + ", "
-        + DbSchemaM.PracticesTable.Cols.description + ", "
-        + DbSchemaM.PracticesTable.Cols.question
+        "INSERT INTO " + DbSchemaM.JournalTable.name + " ("
+        + DbSchemaM.JournalTable.Cols.title
         + ")"
-        + " VALUES (?, ?, ?)", observances_lt
+        + " VALUES (?)", journal_list
+    )
+    reminder_list = [
+        ("Meditation", "Did I practice meditation today?", 0),
+        ("Tai Chi or mindful movements", "Did I practice Tai Chi or did I do mindful movements?", 1),
+        ("Dharma talk", "Did I listen to a Dharma talk?", 0)
+    ]
+    i_db_conn.executemany(
+        "INSERT INTO " + DbSchemaM.ReminderTable.name + " ("
+        + DbSchemaM.ReminderTable.Cols.title + ", "
+        + DbSchemaM.ReminderTable.Cols.description + ", "
+        + DbSchemaM.ReminderTable.Cols.journal_ref
+        + ")"
+        + " VALUES (?, ?, ?)", reminder_list
     )
 
 
@@ -125,24 +149,22 @@ class DbHelperM(object):
 
 
 class DbSchemaM:
-    class PracticesTable:
-        name = "practices"
+    class JournalTable:
+        name = "journal"
+
+        class Cols:
+            id = "id"
+            title = "title"
+
+    class ReminderTable:
+        name = "reminder"
 
         class Cols:
             id = "id"  # key
             title = "title"
-            description = "description"
-            user_text = "user_text"
-
             archived = "archived"
-            time_of_day = "time_of_day"  # can be changed in schedule?
-            situation = "situation"
-            question = "question"
-
-            days_before_notification = "days_before_notification"
-
-            # diary references this table
-            # wisdom may reference this table in the future
+            description = "description"
+            journal_ref = "journal_ref"
 
     class DiaryTable:
         name = "diary"
@@ -151,70 +173,86 @@ class DbSchemaM:
             id = "id"  # key
             date_added = "date_added"
             diary_text = "diary_text"
-            practices_ref = "practices_ref"
-
-            breathing = "breathing"
-            enjoyment = "enjoyment"
-            intention = "intention"
-            hindrances = "hindrances"
-            #state_of_mind
+            reminder_ref = "reminder_ref"
+            journal_ref = "journal_ref"
 
 
-class PracticesM:
-    def __init__(self, i_id, i_title, i_description,
-            i_user_text="", i_question="", i_time_of_day=TIME_NOT_SET):
-        self.id = i_id
-        self.title = i_title
-        self.description = i_description
-        self.user_text = i_user_text
-        self.question = i_question
-        self.time_of_day = i_time_of_day
+class JournalM:
+    def __init__(self, i_id_it: int, i_title_sg: str) -> None:
+        self.id_it = i_id_it
+        self.title_sg = i_title_sg
 
     @staticmethod
-    def add(i_practice_title_sg):
-        db_connection = DbHelperM.get_db_connection()
-        db_cursor = db_connection.cursor()
-        db_cursor.execute(
-            "INSERT INTO " + DbSchemaM.PracticesTable.name + "("
-            + DbSchemaM.PracticesTable.Cols.title + ", "
-            + DbSchemaM.PracticesTable.Cols.description
-            + ") VALUES (?, ?)",
-            (i_practice_title_sg, "no description set")
-        )
-        db_connection.commit()
-
-    @staticmethod
-    def get(i_id):
+    def get(i_id_it):
         db_connection = DbHelperM.get_db_connection()
         db_cursor = db_connection.cursor()
         db_cursor_result = db_cursor.execute(
-            "SELECT * FROM " + DbSchemaM.PracticesTable.name
-            + " WHERE " + DbSchemaM.PracticesTable.Cols.id + "=" + str(i_id)
+            "SELECT * FROM " + DbSchemaM.JournalTable.name
+            + " WHERE " + DbSchemaM.JournalTable.Cols.id + "=" + str(i_id_it)
         )
-        practice_tuple_from_db = db_cursor_result.fetchone()
+        journal_db_te = db_cursor_result.fetchone()
         db_connection.commit()
 
-        return PracticesM(
-            practice_tuple_from_db[0],
-            practice_tuple_from_db[1],
-            practice_tuple_from_db[2],
-            practice_tuple_from_db[3],
-            practice_tuple_from_db[4],
-            practice_tuple_from_db[5]
-        )
+        return JournalM(*journal_db_te)
 
+    @staticmethod
+    def get_all():
+        db_connection = DbHelperM.get_db_connection()
+        db_cursor = db_connection.cursor()
+        db_cursor_result = db_cursor.execute("SELECT * FROM " + DbSchemaM.JournalTable.name)
+        journal_db_te_list = db_cursor_result.fetchall()
+        db_connection.commit()
+
+        return [JournalM(*journal_db_te) for journal_db_te in journal_db_te_list]
+
+
+class ReminderM:
+    def __init__(self, i_id_it: int, i_title_sg: str, i_description_sg: str,
+            i_archived_it: int, i_journal_ref_it: int) -> None:
+        self.id = i_id_it
+        self.title = i_title_sg
+        self.description_sg = i_description_sg
+        self.archived_it = i_archived_it
+        self.journal_ref_it = i_journal_ref_it
+
+    @staticmethod
+    def add(i_title_sg):
+        db_connection = DbHelperM.get_db_connection()
+        db_cursor = db_connection.cursor()
+        db_cursor.execute(
+            "INSERT INTO " + DbSchemaM.ReminderTable.name + "("
+            + DbSchemaM.ReminderTable.Cols.title
+            + ") VALUES (?)",
+            (i_title_sg,)
+        )
+        db_connection.commit()
+
+    @staticmethod
+    def get(i_id_it):
+        db_connection = DbHelperM.get_db_connection()
+        db_cursor = db_connection.cursor()
+        db_cursor_result = db_cursor.execute(
+            "SELECT * FROM " + DbSchemaM.ReminderTable.name
+            + " WHERE " + DbSchemaM.ReminderTable.Cols.id + "=" + str(i_id_it)
+        )
+        reminder_db_te = db_cursor_result.fetchone()
+        db_connection.commit()
+
+        return ReminderM(*reminder_db_te)
+
+    """
     @staticmethod
     def get_for_diary_id(i_diary_id):
         db_connection = DbHelperM.get_db_connection()
         db_cursor = db_connection.cursor()
         db_cursor_result = db_cursor.execute(
-            "SELECT * FROM " + DbSchemaM.PracticesTable.name
-            + " WHERE " + DbSchemaM.PracticesTable.Cols.id + "=" + str(i_diary_id)
+            "SELECT * FROM " + DbSchemaM.ReminderTable.name
+            + " WHERE " + DbSchemaM.ReminderTable.Cols.id + "=" + str(i_diary_id)
         )
         t_obs_tuple = db_cursor_result.fetchone()
         db_connection.commit()
 
-        ret_return = PracticesM(
+        ret_return = ReminderM(
             t_obs_tuple[0],
             t_obs_tuple[1],
             t_obs_tuple[2],
@@ -224,65 +262,33 @@ class PracticesM:
         )
 
         return ret_return
+    """
 
     @staticmethod
-    def get_all(i_orderby_timeofday_bl=False):
-        ret_observance_lt = []
+    def get_all() -> List:
+        ret_reminder_list = []
         db_connection = DbHelperM.get_db_connection()
         db_cursor = db_connection.cursor()
-        orderby_sg = DbSchemaM.PracticesTable.Cols.id
-        if i_orderby_timeofday_bl:
-            orderby_sg = DbSchemaM.PracticesTable.Cols.time_of_day
-        db_cursor_result = db_cursor.execute("SELECT * FROM " + DbSchemaM.PracticesTable.name
-            + " ORDER BY " + orderby_sg + " ASC")
-        observances_from_db = db_cursor_result.fetchall()
-        for tuple in observances_from_db:
-            ret_observance_lt.append(
-                PracticesM(
-                    tuple[0],
-                    tuple[1],
-                    tuple[2],
-                    tuple[3],
-                    tuple[4],
-                    tuple[5]
-                )
-            )
-        db_connection.commit()
-        return ret_observance_lt
-
-    @staticmethod
-    def update_custom_user_text(i_id, i_text):
-        db_connection = DbHelperM.get_db_connection()
-        db_cursor = db_connection.cursor()
-        db_cursor.execute(
-            "UPDATE " + DbSchemaM.PracticesTable.name
-            + " SET " + DbSchemaM.PracticesTable.Cols.user_text + " = ?"
-            + " WHERE " + DbSchemaM.PracticesTable.Cols.id + " = ?",
-            (i_text, i_id)
+        orderby_sg = DbSchemaM.ReminderTable.Cols.id
+        db_cursor_result = db_cursor.execute(
+            "SELECT * FROM " + DbSchemaM.ReminderTable.name
+            + " ORDER BY " + orderby_sg + " ASC"
         )
+        reminder_db_te_list = db_cursor_result.fetchall()
+        for reminder_db_te in reminder_db_te_list:
+            ret_reminder_list.append(ReminderM(*reminder_db_te))
         db_connection.commit()
+        return ret_reminder_list
 
     @staticmethod
-    def update_question_text(i_id, i_text):
+    def update_description(i_id_it: int, i_new_description_sg: str) -> None:
         db_connection = DbHelperM.get_db_connection()
         db_cursor = db_connection.cursor()
         db_cursor.execute(
-            "UPDATE " + DbSchemaM.PracticesTable.name
-            + " SET " + DbSchemaM.PracticesTable.Cols.question + " = ?"
-            + " WHERE " + DbSchemaM.PracticesTable.Cols.id + " = ?",
-            (i_text, i_id)
-        )
-        db_connection.commit()
-
-    @staticmethod
-    def update_time_of_day(i_id, i_hour_it):
-        db_connection = DbHelperM.get_db_connection()
-        db_cursor = db_connection.cursor()
-        db_cursor.execute(
-            "UPDATE " + DbSchemaM.PracticesTable.name
-            + " SET " + DbSchemaM.PracticesTable.Cols.time_of_day + " = ?"
-            + " WHERE " + DbSchemaM.PracticesTable.Cols.id + " = ?",
-            (str(i_hour_it), i_id)
+            "UPDATE " + DbSchemaM.ReminderTable.name
+            + " SET " + DbSchemaM.ReminderTable.Cols.description + " = ?"
+            + " WHERE " + DbSchemaM.ReminderTable.Cols.id + " = ?",
+            (i_new_description_sg, i_id_it)
         )
         db_connection.commit()
 
@@ -295,16 +301,16 @@ class DiaryM:
         self.practice_ref_it = i_practice_ref_it
 
     @staticmethod
-    def add(i_date_added_it, i_diary_text, i_practice_ref_it):
+    def add(i_date_added_it, i_diary_text, i_journal_ref_it):
         db_connection = DbHelperM.get_db_connection()
         db_cursor = db_connection.cursor()
         db_cursor.execute(
             "INSERT INTO " + DbSchemaM.DiaryTable.name + "("
             + DbSchemaM.DiaryTable.Cols.date_added + ", "
             + DbSchemaM.DiaryTable.Cols.diary_text + ", "
-            + DbSchemaM.DiaryTable.Cols.practices_ref
+            + DbSchemaM.DiaryTable.Cols.journal_ref
             + ") VALUES (?, ?, ?)",
-            (i_date_added_it, i_diary_text, i_practice_ref_it)
+            (i_date_added_it, i_diary_text, i_journal_ref_it)
         )
         db_connection.commit()
 
@@ -352,70 +358,48 @@ class DiaryM:
             "SELECT * FROM " + DbSchemaM.DiaryTable.name + " WHERE "
             + DbSchemaM.DiaryTable.Cols.id + "=" + str(i_id_it)
         )
-        t_diary_tuple_from_db = db_cursor_result.fetchone()
+        diary_db_te = db_cursor_result.fetchone()
         db_connection.commit()
 
-        return DiaryM(
-            t_diary_tuple_from_db[0],
-            t_diary_tuple_from_db[1],
-            t_diary_tuple_from_db[2],
-            t_diary_tuple_from_db[3]
-        )
+        return DiaryM(*diary_db_te)
 
     @staticmethod
     def get_all(i_reverse_bl = False):
         t_direction_sg = "ASC"
         if i_reverse_bl:
             t_direction_sg = "DESC"
-        ret_diary_lt = []
+        ret_diary_list = []
         db_connection = DbHelperM.get_db_connection()
         db_cursor = db_connection.cursor()
         db_cursor_result = db_cursor.execute(
             "SELECT * FROM " + DbSchemaM.DiaryTable.name
             + " ORDER BY " + DbSchemaM.DiaryTable.Cols.date_added + " " + t_direction_sg
         )
-        t_diary_from_db = db_cursor_result.fetchall()
-        for t_tuple in t_diary_from_db:
-            ret_diary_lt.append(DiaryM(
-                t_tuple[0],
-                t_tuple[1],
-                t_tuple[2],
-                t_tuple[3]
-            ))
+        diary_db_te_list = db_cursor_result.fetchall()
+        for diary_db_te in diary_db_te_list:
+            ret_diary_list.append(DiaryM(*diary_db_te))
         db_connection.commit()
-        return ret_diary_lt
+        return ret_diary_list
 
     @staticmethod
-    def get_all_for_practice_and_day(i_practice_id, i_start_of_day_as_unix_time_it, i_reverse_bl=True):
-        """
-        :param i_practice_id:
-        :param i_start_of_day_as_unix_time_it: It's very important that this is given as the start of the day
-        :param i_reverse_bl:
-        :return:
-        """
-        ret_diary_lt = []
+    def get_all_for_journal_and_day(i_journal_id_it: int, i_start_of_day_as_unix_time_it: int, i_reverse_bl=True):
+        ret_diary_list = []
         db_connection = DbHelperM.get_db_connection()
         db_cursor = db_connection.cursor()
         db_cursor_result = db_cursor.execute(
             "SELECT * FROM " + DbSchemaM.DiaryTable.name
             + " WHERE " + DbSchemaM.DiaryTable.Cols.date_added + ">=" + str(i_start_of_day_as_unix_time_it)
             + " AND " + DbSchemaM.DiaryTable.Cols.date_added + "<" + str(i_start_of_day_as_unix_time_it + 24 * 3600)
-            + " AND " + DbSchemaM.DiaryTable.Cols.practices_ref + "=" + str(i_practice_id)
+            + " AND " + DbSchemaM.DiaryTable.Cols.journal_ref + "=" + str(i_journal_id_it)
         )
-        t_diary_from_db = db_cursor_result.fetchall()
-        for t_tuple in t_diary_from_db:
-            ret_diary_lt.append(DiaryM(
-                t_tuple[0],
-                t_tuple[1],
-                t_tuple[2],
-                t_tuple[3]
-            ))
+        diary_db_te_list = db_cursor_result.fetchall()
+        for diary_db_te in diary_db_te_list:
+            ret_diary_list.append(DiaryM(*diary_db_te))
         db_connection.commit()
 
         if i_reverse_bl:
-            ret_diary_lt.reverse()
-
-        return ret_diary_lt
+            ret_diary_list.reverse()
+        return ret_diary_list
 
     @staticmethod
     def get_all_for_active_day(i_reverse_bl=True):
@@ -426,7 +410,7 @@ class DiaryM:
         )
         start_of_day_unixtime_it = int(start_of_day_datetime.timestamp())
 
-        ret_diary_lt = []
+        ret_diary_list = []
         db_connection = DbHelperM.get_db_connection()
         db_cursor = db_connection.cursor()
         db_cursor_result = db_cursor.execute(
@@ -434,35 +418,51 @@ class DiaryM:
             + " WHERE " + DbSchemaM.DiaryTable.Cols.date_added + ">=" + str(start_of_day_unixtime_it)
             + " AND " + DbSchemaM.DiaryTable.Cols.date_added + "<" + str(start_of_day_unixtime_it + 24 * 3600)
         )
-        t_diary_from_db = db_cursor_result.fetchall()
-        for t_tuple in t_diary_from_db:
-            ret_diary_lt.append(DiaryM(
-                t_tuple[0],
-                t_tuple[1],
-                t_tuple[2],
-                t_tuple[3]
-            ))
+        diary_db_te_list = db_cursor_result.fetchall()
+        for diary_db_te in diary_db_te_list:
+            ret_diary_list.append(DiaryM(*diary_db_te))
         db_connection.commit()
 
         if i_reverse_bl:
-            ret_diary_lt.reverse()
-        return ret_diary_lt
+            ret_diary_list.reverse()
+        return ret_diary_list
 
 
 def export_all():
     pass
+    """
+    csv_writer = csv.writer(open("exported.csv", "w"))
+    t_space_tab_sg = "    "
+    for obs_item in ObservanceM.get_all():
+        csv_writer.writerow((obs_item.title, obs_item.description))
+    csv_writer.writerow(("\n\n\n",))
+    for obs in ObservanceM.get_all():  # -TODO: This doesn't work since we may skip indexes
+        csv_writer.writerow((obs.title,))
+        for karma_item in KarmaM.get_for_observance_list([obs.id]):
+            csv_writer.writerow((t_space_tab_sg + karma_item.title_sg,))
+    csv_writer.writerow(("\n\n\n",))
 
+    # TODO:
+    for diary_item in DiaryM.get_all():
+        t_diary_entry_obs_sg = ObservanceM.get(diary_item.observance_ref).title
+        t_karma = KarmaM.get(diary_item.karma_ref)
+        if t_karma is None:
+            t_diary_entry_karma_sg = ""
+        else:
+            t_diary_entry_karma_sg = t_karma.title_sg
+        csv_writer.writerow((t_diary_entry_obs_sg, t_diary_entry_karma_sg, diary_item.diary_text))
+
+    for diary_item in DiaryM.get_all():
+        t_karma = KarmaM.get(diary_item.ref_karma_id)
+        if t_karma is None:
+            t_diary_entry_karma_sg = ""
+        else:
+            t_diary_entry_karma_sg = t_karma.title_sg
+        csv_writer.writerow((t_diary_entry_karma_sg, diary_item.diary_text))
+    """
 
 def backup_db_file():
     date_sg = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     new_file_name_sg = DATABASE_FILE_NAME + "_" + date_sg
-    copyfile(DATABASE_FILE_NAME, new_file_name_sg)
+    shutil.copyfile(DATABASE_FILE_NAME, new_file_name_sg)
     return
-    """
-    Alternative: Appending a number to the end of the file name
-    i = 1
-    while(True):
-        if not os.path.isfile(new_file_name_sg):
-            break
-        i += 1
-    """

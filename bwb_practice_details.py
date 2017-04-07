@@ -44,13 +44,13 @@ class PracticeCompositeWidget(QtWidgets.QWidget):
             return
         qtime = self.time_of_day_timeedit.time()
         if self.time_of_day_active_qcb.checkState() == QtCore.Qt.Checked:
-            bwb_model.PracticesM.update_time_of_day(self.id_it, qtime.hour())
+            bwb_model.ReminderM.update_time_of_day(self.id_it, qtime.hour())
 
             # Set a scheduled task
-            practice = bwb_model.PracticesM.get(self.id_it)
+            practice = bwb_model.ReminderM.get(self.id_it)
             self.set_reminder(qtime.hour(), practice.title)
         else:
-            bwb_model.PracticesM.update_time_of_day(self.id_it, bwb_model.TIME_NOT_SET)
+            bwb_model.ReminderM.update_time_of_day(self.id_it, bwb_model.TIME_NOT_SET)
         self.time_of_day_state_changed_signal.emit()
 
     def set_reminder(self, i_hour_it, i_practice_title_sg):
@@ -74,7 +74,7 @@ class PracticeCompositeWidget(QtWidgets.QWidget):
     def on_question_text_changed(self):
         if self.id_it == ID_NOT_SET:
             return
-        bwb_model.PracticesM.update_question_text(
+        bwb_model.ReminderM.update_question_text(
             self.id_it,
             self.question_le.text().strip()
         )
@@ -87,7 +87,7 @@ class PracticeCompositeWidget(QtWidgets.QWidget):
         ###time_of_day_cb_was_blocked_bl = self.time_of_day_active_qcb.blockSignals(True)
         ###time_of_day_timeedit_was_blocked_bl = self.time_of_day_timeedit.blockSignals(True)
 
-        practice = bwb_model.PracticesM.get(self.id_it)
+        practice = bwb_model.ReminderM.get(self.id_it)
         ##self.details_ll.setText(practice.description)
         self.question_le.setText(practice.question)
 

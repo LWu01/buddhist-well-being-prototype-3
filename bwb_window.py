@@ -88,10 +88,10 @@ class WellBeingWindow(QtWidgets.QMainWindow):
 
         # ..diary
         ####self.diary_composite_w3 = bwb_diary.DiaryListCompositeWidget()
-        self.central_w3 = bwb_central.CentralWidget()
-        self.central_w3.qtabwidget.widget(0).add_text_to_diary_button_pressed_signal.connect(self.on_diary_add_entry_button_pressed)
-        self.central_w3.qtabwidget.widget(0).context_menu_change_date_signal.connect(self.on_diary_context_menu_change_date)
-        self.central_w3.qtabwidget.widget(0).context_menu_delete_signal.connect(self.on_diary_context_menu_delete)
+        self.central_w3 = bwb_central.CustomTabWidget()
+        self.central_w3.widget(0).add_text_to_diary_button_pressed_signal.connect(self.on_diary_add_entry_button_pressed)
+        self.central_w3.widget(0).context_menu_change_date_signal.connect(self.on_diary_context_menu_change_date)
+        self.central_w3.widget(0).context_menu_delete_signal.connect(self.on_diary_context_menu_delete)
         self.setCentralWidget(self.central_w3)
 
         # ..wisdom
@@ -218,7 +218,7 @@ class WellBeingWindow(QtWidgets.QMainWindow):
         practice_id_it = current_practice_qlistitem.data(QtCore.Qt.UserRole)
         self.practice_details_composite_w3.change_practice(practice_id_it)
 
-        practice = bwb_model.PracticesM.get(practice_id_it)
+        practice = bwb_model.ReminderM.get(practice_id_it)
         self.central_w3.qtabwidget.widget(0).question_label.setText(practice.question)  ## TODO: Fix .widget(0)
 
     def on_practice_item_selection_changed(self):
@@ -226,7 +226,7 @@ class WellBeingWindow(QtWidgets.QMainWindow):
         ###self.update_gui(EventSource.obs_selection_changed)  # Showing habits for practice etc
 
     def on_practice_new_button_pressed_signal(self, i_practice_text_sg):
-        bwb_model.PracticesM.add(i_practice_text_sg)
+        bwb_model.ReminderM.add(i_practice_text_sg)
         self.update_gui()
 
     def on_diary_add_entry_button_pressed(self, i_text_sg, i_unix_time_it):
@@ -268,6 +268,6 @@ class WellBeingWindow(QtWidgets.QMainWindow):
         if i_event_source != EventSource.obs_current_row_changed:
             self.practice_composite_w3.update_gui()
 
-        self.central_w3.qtabwidget.widget(0).update_gui()  ### TODO: Fix .widget(0)
+        self.central_w3.widget(0).update_gui()  ### TODO: Fix .widget(0)
 
         self.custom_calendar_w3.update_gui()

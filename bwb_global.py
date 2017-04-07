@@ -3,8 +3,11 @@ from PyQt5 import QtWidgets
 from PyQt5 import QtCore
 from PyQt5 import QtGui
 
+import bwb_model
+
 
 active_date_qdate = QtCore.QDate.currentDate()
+
 
 
 def qdate_to_unixtime(i_qdate: QtCore.QDate) -> int:

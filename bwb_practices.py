@@ -73,7 +73,7 @@ class PracticeCompositeWidget(QtWidgets.QWidget):
         """
         self.list_widget.clear()
         counter = 0
-        for practice_item in bwb_model.PracticesM.get_all():
+        for practice_item in bwb_model.ReminderM.get_all():
             # Important: "Alternatively, if you want the widget to have a fixed size based on its contents,
             # you can call QLayout::setSizeConstraint(QLayout::SetFixedSize);"
             # https://doc.qt.io/qt-5/qwidget.html#setSizePolicy-1

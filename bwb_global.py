@@ -9,7 +9,6 @@ import bwb_model
 active_date_qdate = QtCore.QDate.currentDate()
 
 
-
 def qdate_to_unixtime(i_qdate: QtCore.QDate) -> int:
     qdatetime = QtCore.QDateTime(i_qdate)
     unixtime_it = qdatetime.toMSecsSinceEpoch() // 1000

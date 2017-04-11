@@ -4,7 +4,6 @@ from PyQt5 import QtCore
 
 
 class WisdomCompositeWidget(QtWidgets.QWidget):
-    time_of_day_state_changed_signal = QtCore.pyqtSignal()
 
     def __init__(self):
         super().__init__()
@@ -24,10 +23,6 @@ class WisdomCompositeWidget(QtWidgets.QWidget):
 
         self.qtreewidget.setItemWidget(efforts_first_qtwi, 1, QtWidgets.QPushButton("Filter"))
 
-
-
-
-
         four_est_mindfulness_qtwi = QtWidgets.QTreeWidgetItem(self.qtreewidget, ["Four Est. of Mindfulness"])
         four_est_mindfulness_body_qtwi = QtWidgets.QTreeWidgetItem(four_est_mindfulness_qtwi, ["Body"])
         four_est_mindfulness_feelings_qtwi = QtWidgets.QTreeWidgetItem(four_est_mindfulness_qtwi, ["Feelings"])
@@ -40,8 +35,6 @@ class WisdomCompositeWidget(QtWidgets.QWidget):
         four_immeasurable_joy_qtwi = QtWidgets.QTreeWidgetItem(four_immeasurable_minds_qtwi, ["Sympathetic Joy"])
         four_immeasurable_equanimity_qtwi = QtWidgets.QTreeWidgetItem(four_immeasurable_minds_qtwi, ["Equanimity"])
 
-
-
         noble_eightfold_path_qtwi = QtWidgets.QTreeWidgetItem(self.qtreewidget, ["Noble Eightfold Path"])
         noble_eightfold_path_view_qtwi = QtWidgets.QTreeWidgetItem(noble_eightfold_path_qtwi, ["Right View"])
         noble_eightfold_path_thinking_qtwi = QtWidgets.QTreeWidgetItem(noble_eightfold_path_qtwi, ["Right Thinking"])
@@ -52,24 +45,17 @@ class WisdomCompositeWidget(QtWidgets.QWidget):
         noble_eightfold_path_mindfulness_qtwi = QtWidgets.QTreeWidgetItem(noble_eightfold_path_qtwi, ["Right Mindfulness"])
         noble_eightfold_path_concentration_qtwi = QtWidgets.QTreeWidgetItem(noble_eightfold_path_qtwi, ["Right Concentration"])
 
-
-
         four_noble_truths_qtwi = QtWidgets.QTreeWidgetItem(self.qtreewidget, ["Four Noble Truths"])
         four_noble_truths_suffering_qtwi = QtWidgets.QTreeWidgetItem(four_noble_truths_qtwi, ["Suffering"])
         four_noble_truths_causes_qtwi = QtWidgets.QTreeWidgetItem(four_noble_truths_qtwi, ["Causes of Suffering"])
         four_noble_truths_cessation_qtwi = QtWidgets.QTreeWidgetItem(four_noble_truths_qtwi, ["Cessation of Suffering"])
         four_noble_truths_path_qtwi = QtWidgets.QTreeWidgetItem(four_noble_truths_qtwi, ["Path to the Cessaction of Suffering"])
 
-
-
-
         self.qtreewidget.expandAll()
         self.qtreewidget.resizeColumnToContents(0)
         self.qtreewidget.resizeColumnToContents(1)
 
-
         self.qtoolbox = QtWidgets.QToolBox()
-
 
         self.four_noble_truths_qlw = QtWidgets.QListWidget()
         self.four_noble_truths_qlw.addItems(

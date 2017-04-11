@@ -14,8 +14,8 @@ import sqlite3
 #
 ######################
 
-BWB_APPLICATION_VERSION_SG = "prototype 3"
-#BWB_APPLICATION_VERSION_IT = 1
+BWB_APPLICATION_VERSION_STR = "prototype 3"
+#BWB_APPLICATION_VERSION_INT = 1
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
@@ -39,7 +39,7 @@ if __name__ == "__main__":
     print("PySQLite (Python module) version: " + str(sqlite3.version))
     print("Qt version: " + str(QtCore.qVersion()))
     print("PyQt (Python module) version: " + str(PyQt5.Qt.PYQT_VERSION_STR))
-    print("Buddhist Well-Being application version: " + str(BWB_APPLICATION_VERSION_SG))
+    print("Buddhist Well-Being application version: " + str(BWB_APPLICATION_VERSION_STR))
     db_conn = bwb_model.DbHelperM.get_db_connection()
     print("Buddhist Well-Being database schema version: " + str(bwb_model.get_schema_version(db_conn)))
     print("=====")

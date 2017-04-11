@@ -61,10 +61,6 @@ class DiaryListCompositeWidget(QtWidgets.QWidget):
         self.my_widget_w5.setObjectName(MY_WIDGET_NAME)
         self.my_widget_w5.setStyleSheet("#" + MY_WIDGET_NAME +"{" + "background-image:url(\"Gerald-G-Yoga-Poses-stylized-1-300px-CC0.png\"); background-position:center; background-repeat:no-repeat" + "}")
 
-        ###self.list_widget.itemPressed.connect(self.on_item_pressed)  # Clicked doesn't work
-        ###self.list_widget.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
-        ###self.list_widget.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
-
         # Adding new diary entry..
         # ..descriptive label
         diary_entry_label = QtWidgets.QLabel("<h4>New diary entry </h4>")
@@ -76,9 +72,27 @@ class DiaryListCompositeWidget(QtWidgets.QWidget):
         self.question_label = QtWidgets.QLabel()
         hbox_l3.addWidget(self.question_label)
         hbox_l3.addStretch()
+        # ..journals
+        journal_label_list = ["Self-compassion", "Gratitude", "Social"]
+        JOURNAL_BUTTON_GROUP_ID_INT = 1
+        journal_qbuttongroup = QtWidgets.QButtonGroup(self)  # -the parent has to be set for exclusive to work
+        journal_qbuttongroup.setExclusive(True)
+        for journal_label_str in journal_label_list:
+            journal_button_qpb = QtWidgets.QPushButton(journal_label_str)
+            journal_button_qpb.setFlat(True)
+            journal_button_qpb.setCheckable(True)
+            journal_qbuttongroup.addButton(journal_button_qpb, JOURNAL_BUTTON_GROUP_ID_INT)
+            hbox_l3.addWidget(journal_button_qpb)
         # ..
         hbox_l3 = QtWidgets.QHBoxLayout()
         self.vbox_l2.addLayout(hbox_l3)
+
+        # ..text area
+        self.adding_text_to_diary_textedit_w6 = QtWidgets.QTextEdit()
+        hbox_l3.addWidget(self.adding_text_to_diary_textedit_w6)
+        self.adding_text_to_diary_textedit_w6.setFixedHeight(ADD_NEW_HEIGHT_IT)
+
+        # .."add new buttons"
         edit_diary_entry_vbox_l4 = QtWidgets.QVBoxLayout()
         hbox_l3.addLayout(edit_diary_entry_vbox_l4)
 
@@ -91,11 +105,6 @@ class DiaryListCompositeWidget(QtWidgets.QWidget):
 
         self.add_and_next_qbn_w3 = QtWidgets.QPushButton("Add and Next")
         edit_diary_entry_vbox_l4.addWidget(self.add_and_next_qbn_w3)
-
-        # ..text area
-        self.adding_text_to_diary_textedit_w6 = QtWidgets.QTextEdit()
-        hbox_l3.addWidget(self.adding_text_to_diary_textedit_w6)
-        self.adding_text_to_diary_textedit_w6.setFixedHeight(ADD_NEW_HEIGHT_IT)
 
     # The same function is used for all the "rows"
     def on_custom_label_mouse_pressed(self, i_qmouseevent, i_diary_id_it):

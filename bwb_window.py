@@ -41,20 +41,18 @@ class WellBeingWindow(QtWidgets.QMainWindow):
         self.setWindowIcon(QtGui.QIcon("icon.png"))
 
         # Setup of widgets..
-
         # ..calendar
-        calendar_dock_qw2 = QtWidgets.QDockWidget("Calendar", self)
+        calendar_dock_qdw2 = QtWidgets.QDockWidget("Calendar", self)
         self.custom_calendar_w3 = bwb_calendar.CustomCalendarWidget()
         self.custom_calendar_w3.setFixedHeight(200)
-        calendar_dock_qw2.setWidget(self.custom_calendar_w3)
-        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, calendar_dock_qw2)
-        calendar_dock_qw2.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea)
+        calendar_dock_qdw2.setWidget(self.custom_calendar_w3)
+        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, calendar_dock_qdw2)
+        calendar_dock_qdw2.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea)
         self.custom_calendar_w3.selectionChanged.connect(self.on_calendar_selection_changed)
-        calendar_dock_qw2.setFeatures(QtWidgets.QDockWidget.NoDockWidgetFeatures)
+        calendar_dock_qdw2.setFeatures(QtWidgets.QDockWidget.NoDockWidgetFeatures)
 
         # TODO: Next day with entry, previous day with entry, TODAY
 
-        # Setup of widgets..
         """
         # ..habits/practices
         practices_dock_qw2 = QtWidgets.QDockWidget("Practices", self)
@@ -91,10 +89,9 @@ class WellBeingWindow(QtWidgets.QMainWindow):
         self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, help_dock_qw2)
         """
 
-        # ..diary
-        ####self.diary_composite_w3 = bwb_diary.DiaryListCompositeWidget()
-        self.central_w3 = bwb_central_tabs.CustomTabWidget()
-        self.setCentralWidget(self.central_w3)
+        # ..central tab widget area
+        self.central_tab_widget_w3 = bwb_central_tabs.CustomTabWidget()
+        self.setCentralWidget(self.central_tab_widget_w3)
 
         # ..wisdom
         wisdom_dock_qw2 = QtWidgets.QDockWidget("Wisdom", self)
@@ -106,49 +103,46 @@ class WellBeingWindow(QtWidgets.QMainWindow):
         # ..blessings
         blessings_dock_qw2 = QtWidgets.QDockWidget("Blessings", self)
         self.blessings_qlw = QtWidgets.QListWidget()
-        blessings_lt = []
-        blessings_lt.append("Not to associate with fools")
-        blessings_lt.append("To associate with the wise")
-        blessings_lt.append("To pay respects where they are due")
-        blessings_lt.append("To reside in a suitable location")
-        blessings_lt.append("To have previously done meritorious deeds")
-        blessings_lt.append("To be heading in the right direction")
-        blessings_lt.append("To have much learning")
-        blessings_lt.append("To be skilled and knowledgeable")
-        blessings_lt.append("To be restrained by a moral code")
-        blessings_lt.append("To have beautiful speech")
-        blessings_lt.append("To be a support for your parents")
-        blessings_lt.append("The cherishing of wife")
-        blessings_lt.append("The cherishing of children")
-        blessings_lt.append("To make one's livelihood without difficulty")
-        blessings_lt.append("To make gifts")
-        blessings_lt.append("To live in accord with the Dhamma")
-        blessings_lt.append("To cherish one's relatives")
-        blessings_lt.append("To do blameless actions")
-        blessings_lt.append("To cease and abstain from evil")
-        blessings_lt.append("To refrain from intoxicants")
-        blessings_lt.append("Not to be heedless of the Dhamma")
-        blessings_lt.append("To be respectful")
-        blessings_lt.append("To be humble")
-        blessings_lt.append("To be content")
-        blessings_lt.append("To have gratitude")
-        blessings_lt.append("To hear the Dhamma at the right time")
-        blessings_lt.append("To have patience")
-        blessings_lt.append("To be easy to admonish")
-        blessings_lt.append("The sight of monks")
-        blessings_lt.append("To discuss the Dhamma at a suitable time")
-        blessings_lt.append("To practice austerities")
-        blessings_lt.append("To lead the Holy Life")
-        blessings_lt.append("Seeing the Noble Truths")
-        blessings_lt.append("The realization of Nibbana")
-        blessings_lt.append("A mind unshaken by contact with the world")
-        blessings_lt.append("Sorrowlessness")
-        blessings_lt.append("Stainlessness")
-        blessings_lt.append("Secure")
-        self.blessings_qlw.addItems(blessings_lt)
-        ###["number " + str(x) for x in range(1, 39)]
-        ###self.qstack.addItem(self.blessings_qlw, "Blessings")
-        ###self.blessings_composite_w3 = bwb_wisdom.BlessingsCompositeWidget()
+        blessings_list = []
+        blessings_list.append("Not to associate with fools")
+        blessings_list.append("To associate with the wise")
+        blessings_list.append("To pay respects where they are due")
+        blessings_list.append("To reside in a suitable location")
+        blessings_list.append("To have previously done meritorious deeds")
+        blessings_list.append("To be heading in the right direction")
+        blessings_list.append("To have much learning")
+        blessings_list.append("To be skilled and knowledgeable")
+        blessings_list.append("To be restrained by a moral code")
+        blessings_list.append("To have beautiful speech")
+        blessings_list.append("To be a support for your parents")
+        blessings_list.append("The cherishing of wife")
+        blessings_list.append("The cherishing of children")
+        blessings_list.append("To make one's livelihood without difficulty")
+        blessings_list.append("To make gifts")
+        blessings_list.append("To live in accord with the Dhamma")
+        blessings_list.append("To cherish one's relatives")
+        blessings_list.append("To do blameless actions")
+        blessings_list.append("To cease and abstain from evil")
+        blessings_list.append("To refrain from intoxicants")
+        blessings_list.append("Not to be heedless of the Dhamma")
+        blessings_list.append("To be respectful")
+        blessings_list.append("To be humble")
+        blessings_list.append("To be content")
+        blessings_list.append("To have gratitude")
+        blessings_list.append("To hear the Dhamma at the right time")
+        blessings_list.append("To have patience")
+        blessings_list.append("To be easy to admonish")
+        blessings_list.append("The sight of monks")
+        blessings_list.append("To discuss the Dhamma at a suitable time")
+        blessings_list.append("To practice austerities")
+        blessings_list.append("To lead the Holy Life")
+        blessings_list.append("Seeing the Noble Truths")
+        blessings_list.append("The realization of Nibbana")
+        blessings_list.append("A mind unshaken by contact with the world")
+        blessings_list.append("Sorrowlessness")
+        blessings_list.append("Stainlessness")
+        blessings_list.append("Secure")
+        self.blessings_qlw.addItems(blessings_list)
         blessings_dock_qw2.setWidget(self.blessings_qlw)
         self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, blessings_dock_qw2)
 
@@ -196,7 +190,6 @@ class WellBeingWindow(QtWidgets.QMainWindow):
         window_menu.addAction(blessings_window_qaction)
 
         self.update_gui()
-        self.show()
 
     def on_calendar_selection_changed(self):
         print(str(self.custom_calendar_w3.selectedDate()))
@@ -217,7 +210,7 @@ class WellBeingWindow(QtWidgets.QMainWindow):
         self.practice_details_composite_w3.change_practice(practice_id_it)
 
         practice = bwb_model.ReminderM.get(practice_id_it)
-        self.central_w3.qtabwidget.widget(0).question_label.setText(practice.question)  ## TODO: Fix .widget(0)
+        self.central_tab_widget_w3.qtabwidget.widget(0).question_label.setText(practice.question)  ## TODO: Fix .widget(0)
 
     def on_practice_item_selection_changed(self):
         pass
@@ -244,6 +237,6 @@ class WellBeingWindow(QtWidgets.QMainWindow):
             pass
             ##self.practice_composite_w3.update_gui()
 
-        self.central_w3.update_gui()
+        self.central_tab_widget_w3.update_gui()
 
         self.custom_calendar_w3.update_gui()

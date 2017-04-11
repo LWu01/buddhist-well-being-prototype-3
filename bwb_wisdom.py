@@ -17,6 +17,30 @@ class WisdomCompositeWidget(QtWidgets.QWidget):
         self.qtreewidget.setHeaderLabels(["Wisdom"])
         self.qtreewidget.setItemsExpandable(True)
 
+
+        growth_qtwi = QtWidgets.QTreeWidgetItem(self.qtreewidget, ["Growth"])
+        growth_faith_qtwi = QtWidgets.QTreeWidgetItem(growth_qtwi, ["Faith"])
+        growth_virtue_qtwi = QtWidgets.QTreeWidgetItem(growth_qtwi, ["Virtue"])
+        growth_generosity_qtwi = QtWidgets.QTreeWidgetItem(growth_qtwi, ["Generosity"])
+        growth_wisdom_qtwi = QtWidgets.QTreeWidgetItem(growth_qtwi, ["Wisdom"])
+
+        QtWidgets.QTreeWidgetItem(growth_virtue_qtwi, ["Not to kill"])
+        QtWidgets.QTreeWidgetItem(growth_virtue_qtwi, ["Not to steal"])
+        QtWidgets.QTreeWidgetItem(growth_virtue_qtwi, ["Avoiding sexual misconduct"])
+        QtWidgets.QTreeWidgetItem(growth_virtue_qtwi, ["Not to lie"])
+        QtWidgets.QTreeWidgetItem(growth_virtue_qtwi, ["Avoiding intoxicants"])
+
+        QtWidgets.QTreeWidgetItem(growth_wisdom_qtwi, ["Wants to see monks"])
+        QtWidgets.QTreeWidgetItem(growth_wisdom_qtwi, ["Wants to hear the good Dharma"])
+        QtWidgets.QTreeWidgetItem(growth_wisdom_qtwi, ["Retains in mind the teachings he has heard"])
+        QtWidgets.QTreeWidgetItem(growth_wisdom_qtwi,
+            ["Examines the meaning of the teachings that have been retained in mind"])
+        QtWidgets.QTreeWidgetItem(growth_wisdom_qtwi,
+            ["Understands the meaning of the Dharma and then practices in acoordance with the Dharma"])
+
+
+
+
         efforts_qtwi = QtWidgets.QTreeWidgetItem(self.qtreewidget, ["Four Right Efforts"])
         efforts_first_qtwi = QtWidgets.QTreeWidgetItem(efforts_qtwi, ["First"])
         efforts_second_qtwi = QtWidgets.QTreeWidgetItem(efforts_qtwi, ["Second"])
@@ -55,6 +79,10 @@ class WisdomCompositeWidget(QtWidgets.QWidget):
         self.qtreewidget.resizeColumnToContents(0)
         self.qtreewidget.resizeColumnToContents(1)
 
+        self.qtreewidget.collapseItem(growth_virtue_qtwi)
+        self.qtreewidget.collapseItem(growth_wisdom_qtwi)
+
+        """
         self.qtoolbox = QtWidgets.QToolBox()
 
         self.four_noble_truths_qlw = QtWidgets.QListWidget()
@@ -76,3 +104,4 @@ class WisdomCompositeWidget(QtWidgets.QWidget):
         self.powers_qlw.addItems(["Faith", "Diligence (Effort)", "Mindfulness",
             "Concentration", "Insight / Understanding / Wisdom"])
         self.qtoolbox.addItem(self.powers_qlw, "<b>Five Powers</b>")
+        """

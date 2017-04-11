@@ -7,7 +7,8 @@ from PyQt5 import QtWidgets
 from PyQt5 import QtCore
 from PyQt5 import QtGui
 
-ADD_NEW_HEIGHT_IT = 75
+
+MY_WIDGET_NAME = "test-name"
 
 
 class DiaryListCompositeWidget(QtWidgets.QWidget):
@@ -22,89 +23,24 @@ class DiaryListCompositeWidget(QtWidgets.QWidget):
 
     id_for_entry_last_clicked_it = None
 
-    def __init__(self, i_journal_id_it: int):
+    def __init__(self):
         super().__init__()
 
-        self.journal_id_it = i_journal_id_it  # This is the db key
-
         self.vbox_l2 = QtWidgets.QVBoxLayout()
+        self.scroll_list_widget_w3 = QtWidgets.QWidget()
+        self.scroll_area_w2 = QtWidgets.QScrollArea()
+        self.scroll_area_w2.setWidget(self.scroll_list_widget_w3)
+        #hbox_l4.addStretch()
+        self.scroll_area_w2.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
+        self.scroll_area_w2.setWidgetResizable(True)
+        self.scroll_list_vbox_l4 = QtWidgets.QVBoxLayout()
+        self.scroll_list_widget_w3.setLayout(self.scroll_list_vbox_l4)
+        ###self.my_widget_w5.setMaximumWidth(300)
+        self.vbox_l2.addWidget(self.scroll_area_w2)
         self.setLayout(self.vbox_l2)
 
-        hbox_l3 = QtWidgets.QHBoxLayout()
-        self.vbox_l2.addLayout(hbox_l3)
-        journalm = bwb_model.JournalM.get(i_journal_id_it)
-        diary_label = QtWidgets.QLabel("<h3>" + journalm.title_sg + " Journal</h3>")
-        hbox_l3.addWidget(diary_label)
-
-        hbox_l3.addStretch()
-        self.day_view_qrb = QtWidgets.QRadioButton("Diary daily view")
-        self.day_view_qrb.setChecked(True)
-        hbox_l3.addWidget(self.day_view_qrb)
-        self.filter_view_qrb = QtWidgets.QRadioButton("Journal filter view")
-        hbox_l3.addWidget(self.filter_view_qrb)
-        self.lock_view_qpb = QtWidgets.QPushButton("Lock view")
-        self.lock_view_qpb.setCheckable(True)
-        hbox_l3.addWidget(self.lock_view_qpb)
-
-        self.my_widget_w5 = QtWidgets.QWidget()
-        self.scroll_area_w3 = QtWidgets.QScrollArea()
-        self.scroll_area_w3.setWidget(self.my_widget_w5)
-        #hbox_l4.addStretch()
-        self.scroll_area_w3.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
-        self.scroll_area_w3.setWidgetResizable(True)
-        self.scroll_list_vbox_l6 = QtWidgets.QVBoxLayout()
-        self.my_widget_w5.setLayout(self.scroll_list_vbox_l6)
-        ###self.my_widget_w5.setMaximumWidth(300)
-        self.vbox_l2.addWidget(self.scroll_area_w3)
-
-        MY_WIDGET_NAME = "test-name"
-        self.my_widget_w5.setObjectName(MY_WIDGET_NAME)
-        self.my_widget_w5.setStyleSheet("#" + MY_WIDGET_NAME +"{" + "background-image:url(\"Gerald-G-Yoga-Poses-stylized-1-300px-CC0.png\"); background-position:center; background-repeat:no-repeat" + "}")
-
-        # Adding new diary entry..
-        # ..descriptive label
-        diary_entry_label = QtWidgets.QLabel("<h4>New diary entry </h4>")
-        hbox_l3 = QtWidgets.QHBoxLayout()
-        self.vbox_l2.addLayout(hbox_l3)
-        hbox_l3.addWidget(diary_entry_label)
-        ##hbox_l3.addStretch()
-        # ..question
-        self.question_label = QtWidgets.QLabel()
-        hbox_l3.addWidget(self.question_label)
-        hbox_l3.addStretch()
-        # ..journals
-        journal_label_list = ["Self-compassion", "Gratitude", "Social"]
-        JOURNAL_BUTTON_GROUP_ID_INT = 1
-        journal_qbuttongroup = QtWidgets.QButtonGroup(self)  # -the parent has to be set for exclusive to work
-        journal_qbuttongroup.setExclusive(True)
-        for journal_label_str in journal_label_list:
-            journal_button_qpb = QtWidgets.QPushButton(journal_label_str)
-            journal_button_qpb.setFlat(True)
-            journal_button_qpb.setCheckable(True)
-            journal_qbuttongroup.addButton(journal_button_qpb, JOURNAL_BUTTON_GROUP_ID_INT)
-            hbox_l3.addWidget(journal_button_qpb)
-        # ..
-        hbox_l3 = QtWidgets.QHBoxLayout()
-        self.vbox_l2.addLayout(hbox_l3)
-
-        # ..text area
-        self.adding_text_to_diary_textedit_w6 = QtWidgets.QTextEdit()
-        hbox_l3.addWidget(self.adding_text_to_diary_textedit_w6)
-        self.adding_text_to_diary_textedit_w6.setFixedHeight(ADD_NEW_HEIGHT_IT)
-
-        # .."add new buttons"
-        edit_diary_entry_vbox_l4 = QtWidgets.QVBoxLayout()
-        hbox_l3.addLayout(edit_diary_entry_vbox_l4)
-
-        self.add_bn_w3 = QtWidgets.QPushButton("Add new diary entry")
-        edit_diary_entry_vbox_l4.addWidget(self.add_bn_w3)
-        self.add_bn_w3.clicked.connect(self.on_add_text_to_diary_button_clicked)
-
-        self.next_qbn_w3 = QtWidgets.QPushButton("Next journal")
-        edit_diary_entry_vbox_l4.addWidget(self.next_qbn_w3)
-
-        self.add_and_next_qbn_w3 = QtWidgets.QPushButton("Add and Next")
-        edit_diary_entry_vbox_l4.addWidget(self.add_and_next_qbn_w3)
+        self.scroll_list_widget_w3.setObjectName(MY_WIDGET_NAME)
+        self.scroll_list_widget_w3.setStyleSheet("#" + MY_WIDGET_NAME + "{" + "background-image:url(\"Gerald-G-Yoga-Poses-stylized-1-300px-CC0.png\"); background-position:center; background-repeat:no-repeat" + "}")
 
     # The same function is used for all the "rows"
     def on_custom_label_mouse_pressed(self, i_qmouseevent, i_diary_id_it):
@@ -180,38 +116,50 @@ class DiaryListCompositeWidget(QtWidgets.QWidget):
             pass  # -do nothing
 
     def update_gui(self):
-        clear_widget_and_layout_children(self.scroll_list_vbox_l6)  # -clearing
+        clear_widget_and_layout_children(self.scroll_list_vbox_l4)  # -clearing
 
-        for diary_entry in bwb_model.DiaryM.get_all_for_active_day_and_journal(self.journal_id_it):
-            label_text_sg = diary_entry.diary_text.strip()
+        if bwb_global.active_view_viewenum == bwb_global.ViewEnum.journal_monthly_view:
+            for diary_entry in bwb_model.DiaryM.get_all_for_journal(bwb_global.active_journal_id_it):
+                label_text_sg = diary_entry.diary_text.strip()
 
-            hbox_l6 = QtWidgets.QHBoxLayout()
-            self.scroll_list_vbox_l6.addLayout(hbox_l6)
+                hbox_l6 = QtWidgets.QHBoxLayout()
+                self.scroll_list_vbox_l4.addLayout(hbox_l6)
 
-            journalm = bwb_model.JournalM.get(diary_entry.journal_ref_it)
-            journal_sg = str(journalm.title_sg)
-            journal_qlabel = QtWidgets.QLabel(journal_sg)
-            hbox_l6.addWidget(journal_qlabel, stretch=1)
+                journal_qlabel = QtWidgets.QLabel("-")
+                hbox_l6.addWidget(journal_qlabel, stretch=1)
 
-            listitem_cqll = CustomQLabel(label_text_sg, diary_entry.id)
-            listitem_cqll.setWordWrap(True)
-            listitem_cqll.mouse_pressed_signal.connect(self.on_custom_label_mouse_pressed)
-            ###listitem_cqll.setFixedWidth(400)
+                listitem_cqll = CustomQLabel(label_text_sg, diary_entry.id)
+                listitem_cqll.setWordWrap(True)
+                listitem_cqll.mouse_pressed_signal.connect(self.on_custom_label_mouse_pressed)
+                ###listitem_cqll.setFixedWidth(400)
 
-            hbox_l6.addWidget(listitem_cqll, stretch=4)
-            #hbox_l6.addStretch()
+                hbox_l6.addWidget(listitem_cqll, stretch=4)
+                #hbox_l6.addStretch()
 
-        self.scroll_list_vbox_l6.addStretch()
+        elif bwb_global.active_view_viewenum == bwb_global.ViewEnum.diary_daily_overview:
+
+            for diary_entry in bwb_model.DiaryM.get_all_for_active_day():  # -TODO: Change to month
+                label_text_sg = diary_entry.diary_text.strip()
+
+                hbox_l6 = QtWidgets.QHBoxLayout()
+                self.scroll_list_vbox_l4.addLayout(hbox_l6)
+
+                journalm = bwb_model.JournalM.get(diary_entry.journal_ref_it)
+                journal_sg = str(journalm.title_sg)
+                journal_qlabel = QtWidgets.QLabel(journal_sg)
+                hbox_l6.addWidget(journal_qlabel, stretch=1)
+
+                listitem_cqll = CustomQLabel(label_text_sg, diary_entry.id)
+                listitem_cqll.setWordWrap(True)
+                listitem_cqll.mouse_pressed_signal.connect(self.on_custom_label_mouse_pressed)
+
+                hbox_l6.addWidget(listitem_cqll, stretch=4)
+        else:
+            pass
+
+        self.scroll_list_vbox_l4.addStretch()
         #####self.scroll_list_vbox.scrollToBottom() asdf
 
-    def on_add_text_to_diary_button_clicked(self):
-        notes_sg = self.adding_text_to_diary_textedit_w6.toPlainText().strip()
-        if bwb_global.active_date_qdate == QtCore.QDate.currentDate():
-            time_qdatetime = QtCore.QDateTime.currentDateTime()
-            unix_time_it = time_qdatetime.toMSecsSinceEpoch() // 1000
-        else:
-            unix_time_it = bwb_global.qdate_to_unixtime(bwb_global.active_date_qdate)
-        self.add_text_to_diary_button_pressed_signal.emit(notes_sg, unix_time_it)
 
 
 def is_same_day(i_first_date_it, i_second_date_it):

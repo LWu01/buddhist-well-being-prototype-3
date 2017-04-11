@@ -3,7 +3,7 @@ from PyQt5 import QtGui
 from PyQt5 import QtCore
 
 import bwb_model
-import bwb_central_tabs
+import bwb_central
 import bwb_practice_details
 import bwb_practices
 import bwb_wisdom
@@ -90,7 +90,7 @@ class WellBeingWindow(QtWidgets.QMainWindow):
         """
 
         # ..central tab widget area
-        self.central_tab_widget_w3 = bwb_central_tabs.CustomTabWidget()
+        self.central_tab_widget_w3 = bwb_central.CompositeCentralWidget()
         self.setCentralWidget(self.central_tab_widget_w3)
 
         # ..wisdom
@@ -171,18 +171,22 @@ class WellBeingWindow(QtWidgets.QMainWindow):
         ###inline_help_qaction.triggered.connect()
         backup_qaction = QtWidgets.QAction("Backup db", self)
         backup_qaction.triggered.connect(bwb_model.backup_db_file)
+        dear_buddha_qaction = QtWidgets.QAction("Prepend diary entries with \"Dear Buddha\"", self)
+        dear_buddha_qaction.triggered.connect(self.toggle_dear_buddha_text)
         wisdom_window_qaction = wisdom_dock_qw2.toggleViewAction()
         blessings_window_qaction = blessings_dock_qw2.toggleViewAction()
         # ..adding menu items
         self.menu_bar = self.menuBar()
         file_menu = self.menu_bar.addMenu("&File")
         debug_menu = self.menu_bar.addMenu("Debu&g")
+        tools_menu = self.menu_bar.addMenu("&Tools")
         help_menu = self.menu_bar.addMenu("&Help")
         window_menu = self.menu_bar.addMenu("&Window")
         file_menu.addAction(export_qaction)
         file_menu.addAction(exit_qaction)
         debug_menu.addAction(redraw_qaction)
         debug_menu.addAction(backup_qaction)
+        tools_menu.addAction(dear_buddha_qaction)
         help_menu.addAction(about_qaction)
         help_menu.addAction(manual_qaction)
         help_menu.addAction(inline_help_qaction)
@@ -190,6 +194,15 @@ class WellBeingWindow(QtWidgets.QMainWindow):
         window_menu.addAction(blessings_window_qaction)
 
         self.update_gui()
+
+    def toggle_dear_buddha_text(self):
+        self.show()
+        old_text_str = self.central_tab_widget_w3.adding_text_to_diary_textedit_w6.toPlainText()
+        new_text_str = "Dear Buddha, "
+        if old_text_str.startswith(new_text_str):
+            new_text_str_length_int = len(new_text_str)
+            new_text_str = old_text_str[new_text_str_length_int:]
+        self.central_tab_widget_w3.adding_text_to_diary_textedit_w6.setText(new_text_str)
 
     def on_calendar_selection_changed(self):
         print(str(self.custom_calendar_w3.selectedDate()))

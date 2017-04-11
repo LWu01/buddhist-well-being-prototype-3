@@ -2,6 +2,7 @@ import sqlite3
 import csv
 import shutil
 import datetime
+import time
 from typing import List
 
 import bwb_global
@@ -83,7 +84,9 @@ def initial_schema_and_setup(i_db_conn):
 
     journal_list = [
         ("Gratitude",),
-        ("Virtue",)
+        ("Virtue",),
+        ("Self-compassion",),
+        ("Friends",),
     ]
     i_db_conn.executemany(
         "INSERT INTO " + DbSchemaM.JournalTable.name + " ("
@@ -104,6 +107,9 @@ def initial_schema_and_setup(i_db_conn):
         + ")"
         + " VALUES (?, ?, ?)", reminder_list
     )
+
+
+    populate_db_with_test_data()
 
 
 """
@@ -456,6 +462,31 @@ class DiaryM:
             ret_diary_list.reverse()
         return ret_diary_list
 
+    @staticmethod
+    def get_all_for_journal(i_journal_id_it, i_reverse_bl=True):
+        start_of_day_datetime = datetime.datetime(
+            year=bwb_global.active_date_qdate.year(),
+            month=bwb_global.active_date_qdate.month(),
+            day=bwb_global.active_date_qdate.day()
+        )
+        start_of_day_unixtime_it = int(start_of_day_datetime.timestamp())
+
+        ret_diary_list = []
+        db_connection = DbHelperM.get_db_connection()
+        db_cursor = db_connection.cursor()
+        db_cursor_result = db_cursor.execute(
+            "SELECT * FROM " + DbSchemaM.DiaryTable.name
+            + " WHERE " + DbSchemaM.DiaryTable.Cols.journal_ref + "=" + str(i_journal_id_it)
+        )
+        diary_db_te_list = db_cursor_result.fetchall()
+        for diary_db_te in diary_db_te_list:
+            ret_diary_list.append(DiaryM(*diary_db_te))
+        db_connection.commit()
+
+        if i_reverse_bl:
+            ret_diary_list.reverse()
+        return ret_diary_list
+
 
 def export_all():
     pass
@@ -495,3 +526,13 @@ def backup_db_file():
     new_file_name_sg = DATABASE_FILE_NAME + "_" + date_sg
     shutil.copyfile(DATABASE_FILE_NAME, new_file_name_sg)
     return
+
+def populate_db_with_test_data():
+
+    # add(i_date_added_it, i_diary_text, i_journal_ref_it):
+
+    DiaryM.add(time.time(), "Dear Buddha, today i have been practicing meditation before meeting a friend of mine", 2)
+    DiaryM.add(time.time(), "Dear Buddha, i'm grateful for being able to breathe!", 1)
+    DiaryM.add(time.time(), "Most difficult today was my negative thinking", 3)
+    DiaryM.add(time.time(), "Grateful for having a place to live, a roof over my head, food to eat, and people to care for", 1)
+

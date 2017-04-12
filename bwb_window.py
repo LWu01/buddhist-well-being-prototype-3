@@ -43,12 +43,13 @@ class WellBeingWindow(QtWidgets.QMainWindow):
         # Setup of widgets..
         # ..calendar
         calendar_dock_qdw2 = QtWidgets.QDockWidget("Calendar", self)
-        self.custom_calendar_w3 = bwb_calendar.CustomCalendarWidget()
+        self.custom_calendar_w3 = bwb_calendar.CompositeCalendarWidget()
         self.custom_calendar_w3.setFixedHeight(200)
         calendar_dock_qdw2.setWidget(self.custom_calendar_w3)
         self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, calendar_dock_qdw2)
         calendar_dock_qdw2.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea)
-        self.custom_calendar_w3.selectionChanged.connect(self.on_calendar_selection_changed)
+        self.custom_calendar_w3.calendar_widget.selectionChanged.connect(self.on_calendar_selection_changed)
+        self.custom_calendar_w3.calendar_widget.currentPageChanged.connect(self.on_calendar_page_changed)
         calendar_dock_qdw2.setFeatures(QtWidgets.QDockWidget.NoDockWidgetFeatures)
 
         # TODO: Next day with entry, previous day with entry, TODAY
@@ -190,6 +191,12 @@ class WellBeingWindow(QtWidgets.QMainWindow):
         window_menu.addAction(wisdom_window_qaction)
         window_menu.addAction(blessings_window_qaction)
 
+
+        #self.setStyleSheet("QListWidget::item:selected{background:rgb(0,200,22)}");
+        self.setStyleSheet("selection-background-color:#94DD2B");
+        #self.setStyleSheet("QCalendarWidget::item:selected{background:rgb(0,200,22)}");
+
+
         self.update_gui()
 
     def toggle_dear_buddha_text(self):
@@ -202,25 +209,33 @@ class WellBeingWindow(QtWidgets.QMainWindow):
         self.central_tab_widget_w3.adding_text_to_diary_textedit_w6.setText(new_text_str)
 
     def on_calendar_selection_changed(self):
-        print(str(self.custom_calendar_w3.selectedDate()))
-        bwb_global.active_date_qdate = self.custom_calendar_w3.selectedDate()
+        print(str(self.custom_calendar_w3.calendar_widget.selectedDate()))
+        bwb_global.active_date_qdate = self.custom_calendar_w3.calendar_widget.selectedDate()
+        self.update_gui()
+
+    def on_calendar_page_changed(self):
+        bwb_global.shown_month_1to12_it = self.custom_calendar_w3.calendar_widget.monthShown()
+        bwb_global.shown_year_it = self.custom_calendar_w3.calendar_widget.yearShown()
         self.update_gui()
 
     def on_practice_details_time_of_day_state_changed(self):
         self.update_gui(EventSource.practice_details)
 
     def on_practice_current_row_changed(self, i_current_practice_row_it):
+        pass
+        """
         self.update_gui(EventSource.obs_current_row_changed)
 
         if i_current_practice_row_it == -1:
             return
 
-        current_practice_qlistitem = self.practice_composite_w3.list_widget.item(i_current_practice_row_it)
+        current_practice_qlistitem = self.reminders_composite_w3.list_widget.item(i_current_practice_row_it)
         practice_id_it = current_practice_qlistitem.data(QtCore.Qt.UserRole)
         self.practice_details_composite_w3.change_practice(practice_id_it)
 
         practice = bwb_model.ReminderM.get(practice_id_it)
         self.central_tab_widget_w3.qtabwidget.widget(0).question_label.setText(practice.question)  ## TODO: Fix .widget(0)
+        """
 
     def on_practice_item_selection_changed(self):
         pass

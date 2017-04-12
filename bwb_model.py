@@ -149,6 +149,13 @@ class DbSchemaM:
             id = "id"
             title = "title"
 
+    class TagTable:
+        name = "tag"
+
+        class Cols:
+            id = "id"
+            name = "name"
+
     class ReminderTable:
         name = "reminder"
 
@@ -379,6 +386,28 @@ class DiaryM:
             "SELECT * FROM " + DbSchemaM.DiaryTable.name
             + " WHERE " + DbSchemaM.DiaryTable.Cols.date_added + ">=" + str(i_start_of_day_as_unix_time_it)
             + " AND " + DbSchemaM.DiaryTable.Cols.date_added + "<" + str(i_start_of_day_as_unix_time_it + 24 * 3600)
+            + " AND " + DbSchemaM.DiaryTable.Cols.journal_ref + "=" + str(i_journal_id_it)
+        )
+        diary_db_te_list = db_cursor_result.fetchall()
+        for diary_db_te in diary_db_te_list:
+            ret_diary_list.append(DiaryM(*diary_db_te))
+        db_connection.commit()
+
+        if i_reverse_bl:
+            ret_diary_list.reverse()
+        return ret_diary_list
+
+    @staticmethod
+    def get_all_for_journal_and_month(i_journal_id_it, i_start_of_month_as_unix_time_it,
+            i_number_of_days_in_month_it, i_reverse_bl=True):
+        ret_diary_list = []
+        db_connection = DbHelperM.get_db_connection()
+        db_cursor = db_connection.cursor()
+        db_cursor_result = db_cursor.execute(
+            "SELECT * FROM " + DbSchemaM.DiaryTable.name
+            + " WHERE " + DbSchemaM.DiaryTable.Cols.date_added + ">=" + str(i_start_of_month_as_unix_time_it)
+            + " AND " + DbSchemaM.DiaryTable.Cols.date_added + "<"
+            + str(i_start_of_month_as_unix_time_it + 24 * 3600 * i_number_of_days_in_month_it)
             + " AND " + DbSchemaM.DiaryTable.Cols.journal_ref + "=" + str(i_journal_id_it)
         )
         diary_db_te_list = db_cursor_result.fetchall()

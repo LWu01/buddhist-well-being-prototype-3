@@ -119,7 +119,13 @@ class DiaryListCompositeWidget(QtWidgets.QWidget):
         clear_widget_and_layout_children(self.scroll_list_vbox_l4)  # -clearing
 
         if bwb_global.active_view_viewenum == bwb_global.ViewEnum.journal_monthly_view:
-            for diary_entry in bwb_model.DiaryM.get_all_for_journal(bwb_global.active_journal_id_it):
+
+            qdate = QtCore.QDate(bwb_global.shown_year_it, bwb_global.shown_month_1to12_it, 1)
+            qdatetime = QtCore.QDateTime(qdate)
+            start_of_month_as_unix_time_it = qdatetime.toMSecsSinceEpoch() // 1000
+
+            for diary_entry in bwb_model.DiaryM.get_all_for_journal_and_month(
+                    bwb_global.active_journal_id_it, start_of_month_as_unix_time_it, qdate.daysInMonth()):
                 label_text_sg = diary_entry.diary_text.strip()
 
                 hbox_l6 = QtWidgets.QHBoxLayout()

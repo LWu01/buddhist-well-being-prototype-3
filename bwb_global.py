@@ -23,6 +23,8 @@ class ViewEnum(enum.Enum):
 active_view_viewenum = ViewEnum.diary_daily_overview
 active_date_qdate = QtCore.QDate.currentDate()
 active_journal_id_it = 1  # -TODO: Change this
+shown_month_1to12_it = QtCore.QDate.currentDate().month()
+shown_year_it = QtCore.QDate.currentDate().year()
 
 
 def qdate_to_unixtime(i_qdate: QtCore.QDate) -> int:

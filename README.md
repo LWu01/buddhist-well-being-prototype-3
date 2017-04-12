@@ -14,24 +14,11 @@ It's a cross-platform desktop application and is in an early development/prototy
 
 ## Description
 
-This software project is inspired by a buddhist sutra about "achiveing true happiness", but anyone can benefit from these principles:
-
-* Having friends of virtue
-* Living in a positive environment
-* Learning
-* Caring for family
-* Sharing time, happiness and resources with others
-* Cultivating virtue
-* Gratitude
-* Associating with monks/nuns (Non-buddhists: Wise and peaceful people)
-* Living with an awareness of the Four Noble Truths (Non-buddhists: Self-compassion and compassion)
-* Meditation
-
-The application helps the user to keep these ten principles ("observances") in mind by allowing the user to select them when writing diary entries/notes. Also it can be used in a more casual fashion by adding actions connected to the ten observances and then using these actions by adding them to the diary (optionally with notes)
-
-Also planned:
-* Adding a reminder system for the actions (karma)
-* Visualizing for the user how many times lately she has done something connected with the observances
+A digital Buddhist diary for laypeople, at present there are four journals:
+* Study
+* Practice
+* Engaged practice
+* Gratitude and play
 
 ### Background
 

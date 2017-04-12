@@ -191,11 +191,7 @@ class WellBeingWindow(QtWidgets.QMainWindow):
         window_menu.addAction(wisdom_window_qaction)
         window_menu.addAction(blessings_window_qaction)
 
-
-        #self.setStyleSheet("QListWidget::item:selected{background:rgb(0,200,22)}");
-        self.setStyleSheet("selection-background-color:#94DD2B");
-        #self.setStyleSheet("QCalendarWidget::item:selected{background:rgb(0,200,22)}");
-
+        self.setStyleSheet("selection-background-color:#89D322");
 
         self.update_gui()
 

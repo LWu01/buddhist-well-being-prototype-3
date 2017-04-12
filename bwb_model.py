@@ -234,30 +234,6 @@ class ReminderM:
 
         return ReminderM(*reminder_db_te)
 
-    """
-    @staticmethod
-    def get_for_diary_id(i_diary_id):
-        db_connection = DbHelperM.get_db_connection()
-        db_cursor = db_connection.cursor()
-        db_cursor_result = db_cursor.execute(
-            "SELECT * FROM " + DbSchemaM.ReminderTable.name
-            + " WHERE " + DbSchemaM.ReminderTable.Cols.id + "=" + str(i_diary_id)
-        )
-        t_obs_tuple = db_cursor_result.fetchone()
-        db_connection.commit()
-
-        ret_return = ReminderM(
-            t_obs_tuple[0],
-            t_obs_tuple[1],
-            t_obs_tuple[2],
-            t_obs_tuple[3],
-            t_obs_tuple[4],
-            t_obs_tuple[5]
-        )
-
-        return ret_return
-    """
-
     @staticmethod
     def get_all() -> List:
         ret_reminder_list = []
@@ -377,7 +353,7 @@ class DiaryM:
         return DiaryM(*diary_db_te)
 
     @staticmethod
-    def get_all(i_reverse_bl = False):
+    def get_all(i_reverse_bl = False):  # -TODO: Change to for just one month
         t_direction_sg = "ASC"
         if i_reverse_bl:
             t_direction_sg = "DESC"
@@ -494,37 +470,11 @@ class DiaryM:
 
 
 def export_all():
-    pass
-    """
     csv_writer = csv.writer(open("exported.csv", "w"))
-    t_space_tab_sg = "    "
-    for obs_item in ObservanceM.get_all():
-        csv_writer.writerow((obs_item.title, obs_item.description))
-    csv_writer.writerow(("\n\n\n",))
-    for obs in ObservanceM.get_all():  # -TODO: This doesn't work since we may skip indexes
-        csv_writer.writerow((obs.title,))
-        for karma_item in KarmaM.get_for_observance_list([obs.id]):
-            csv_writer.writerow((t_space_tab_sg + karma_item.title_sg,))
-    csv_writer.writerow(("\n\n\n",))
-
-    # TODO:
     for diary_item in DiaryM.get_all():
-        t_diary_entry_obs_sg = ObservanceM.get(diary_item.observance_ref).title
-        t_karma = KarmaM.get(diary_item.karma_ref)
-        if t_karma is None:
-            t_diary_entry_karma_sg = ""
-        else:
-            t_diary_entry_karma_sg = t_karma.title_sg
-        csv_writer.writerow((t_diary_entry_obs_sg, t_diary_entry_karma_sg, diary_item.diary_text))
-
-    for diary_item in DiaryM.get_all():
-        t_karma = KarmaM.get(diary_item.ref_karma_id)
-        if t_karma is None:
-            t_diary_entry_karma_sg = ""
-        else:
-            t_diary_entry_karma_sg = t_karma.title_sg
-        csv_writer.writerow((t_diary_entry_karma_sg, diary_item.diary_text))
-    """
+        time_datetime = datetime.date.fromtimestamp(diary_item.date_added_it)
+        date_str = time_datetime.strftime("%Y-%m-%d")
+        csv_writer.writerow((date_str, diary_item.diary_text))
 
 def backup_db_file():
     date_sg = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -536,29 +486,15 @@ def populate_db_with_test_data():
 
     # add(i_date_added_it, i_diary_text, i_journal_ref_it):
 
+    delta_day_it = 24 * 60 * 60
+
     DiaryM.add(time.time(), "Dear Buddha, today i have been practicing meditation before meeting a friend of mine", 2)
     DiaryM.add(time.time(), "Dear Buddha, i'm grateful for being able to breathe!", 1)
-    DiaryM.add(time.time(), "Most difficult today was my negative thinking", 2)
-    DiaryM.add(time.time(), "Grateful for having a place to live, a roof over my head, food to eat, and people to care for", 1)
+    DiaryM.add(time.time() - delta_day_it, "Most difficult today was my negative thinking", 2)
+    DiaryM.add(time.time() - 7 * delta_day_it, "Grateful for having a place to live, a roof over my head, food to eat, and people to care for", 1)
 
     ReminderM.add("Meditation", 1)
     ReminderM.add("Tai Chi or mindful movements", 2)
     ReminderM.add("Dharma talk", 1)
-
-    """
-    reminder_list = [
-        ("Meditation", "Did I practice meditation today?", 0),
-        ("Tai Chi or mindful movements", "Did I practice Tai Chi or did I do mindful movements?", 1),
-        ("Dharma talk", "Did I listen to a Dharma talk?", 0)
-    ]
-    i_db_conn.executemany(
-        "INSERT INTO " + DbSchemaM.ReminderTable.name + " ("
-        + DbSchemaM.ReminderTable.Cols.title + ", "
-        + DbSchemaM.ReminderTable.Cols.description + ", "
-        + DbSchemaM.ReminderTable.Cols.journal_ref
-        + ")"
-        + " VALUES (?, ?, ?)", reminder_list
-    )
-    """
 
 

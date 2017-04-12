@@ -16,6 +16,8 @@ JOURNAL_BUTTON_GROUP_ID_INT = 1
 
 class CompositeCentralWidget(QtWidgets.QWidget):
 
+    journal_button_toggled_signal = QtCore.pyqtSignal()
+
     def __init__(self):
         super().__init__()
 
@@ -123,6 +125,8 @@ class CompositeCentralWidget(QtWidgets.QWidget):
     def on_journal_button_toggled(self):
         bwb_global.active_journal_id_it = self.journal_qbuttongroup.checkedId()
         self.update_gui()
+        self.journal_button_toggled_signal.emit()
+
 
     def update_gui(self):
         if bwb_global.active_view_viewenum == bwb_global.ViewEnum.journal_monthly_view:

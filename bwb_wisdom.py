@@ -36,7 +36,7 @@ class WisdomCompositeWidget(QtWidgets.QWidget):
         QtWidgets.QTreeWidgetItem(growth_wisdom_qtwi,
             ["Examines the meaning of the teachings that have been retained in mind"])
         QtWidgets.QTreeWidgetItem(growth_wisdom_qtwi,
-            ["Understands the meaning of the Dharma and then practices in acoordance with the Dharma"])
+            ["Understands the meaning of the Dharma and then practices in accordance with the Dharma"])
 
 
 

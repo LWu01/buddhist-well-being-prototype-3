@@ -53,20 +53,16 @@ class WellBeingWindow(QtWidgets.QMainWindow):
 
         # TODO: Next day with entry, previous day with entry, TODAY
 
-        """
         # ..habits/practices
-        practices_dock_qw2 = QtWidgets.QDockWidget("Practices", self)
-        practices_dock_qw2.setFeatures(
+        self.reminders_dock_qw2 = QtWidgets.QDockWidget("Journal Reminders", self)
+        self.reminders_dock_qw2.setFeatures(
             QtWidgets.QDockWidget.DockWidgetMovable |
             QtWidgets.QDockWidget.DockWidgetFloatable)
-        self.practice_composite_w3 = bwb_practices.PracticeCompositeWidget()
-        self.practice_composite_w3.item_selection_changed_signal.connect(self.on_practice_item_selection_changed)
-        self.practice_composite_w3.current_row_changed_signal.connect(self.on_practice_current_row_changed)
-        self.practice_composite_w3.new_practice_button_pressed_signal.connect(
-            self.on_practice_new_button_pressed_signal)
-        practices_dock_qw2.setWidget(self.practice_composite_w3)
-        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, practices_dock_qw2)
-        """
+        self.reminders_composite_w3 = bwb_practices.PracticeCompositeWidget()
+        self.reminders_composite_w3.item_selection_changed_signal.connect(self.on_practice_item_selection_changed)
+        self.reminders_composite_w3.current_row_changed_signal.connect(self.on_practice_current_row_changed)
+        self.reminders_dock_qw2.setWidget(self.reminders_composite_w3)
+        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.reminders_dock_qw2)
 
         """
         # ..practice details
@@ -92,6 +88,7 @@ class WellBeingWindow(QtWidgets.QMainWindow):
         # ..central tab widget area
         self.central_tab_widget_w3 = bwb_central.CompositeCentralWidget()
         self.setCentralWidget(self.central_tab_widget_w3)
+        self.central_tab_widget_w3.journal_button_toggled_signal.connect(self.update_gui)
 
         # ..wisdom
         wisdom_dock_qw2 = QtWidgets.QDockWidget("Wisdom", self)
@@ -229,18 +226,14 @@ class WellBeingWindow(QtWidgets.QMainWindow):
         pass
         ###self.update_gui(EventSource.obs_selection_changed)  # Showing habits for practice etc
 
-    def on_practice_new_button_pressed_signal(self, i_practice_text_sg):
-        bwb_model.ReminderM.add(i_practice_text_sg)
-        self.update_gui()
-
-
     def show_about_box(self):
         message_box = QtWidgets.QMessageBox.about(
             self, "About Buddhist Well-Being",
             ("Concept and programming by _____\n"
             'Photography (for icons) by Torgny Dellsén - <a href="torgnydellsen.zenfolio.com">asdf</a><br>'
             "Software License: GPLv3\n"
-            "Art license: CC BY-SA 4.0")
+            "Photo license: CC BY-SA 4.0"
+            "Art license: CC PD")
         )
 
     def update_gui(self, i_event_source = EventSource.undefined):
@@ -253,3 +246,8 @@ class WellBeingWindow(QtWidgets.QMainWindow):
         self.central_tab_widget_w3.update_gui()
 
         self.custom_calendar_w3.update_gui()
+
+        self.reminders_composite_w3.update_gui()
+
+        journalm = bwb_model.JournalM.get(bwb_global.active_journal_id_it)
+        self.reminders_dock_qw2.setWindowTitle(journalm.title_sg + " journal reminders")

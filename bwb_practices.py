@@ -6,6 +6,7 @@ import datetime
 import logging
 import time
 import bwb_model
+import bwb_global
 
 
 class PracticeCompositeWidget(QtWidgets.QWidget):
@@ -16,35 +17,45 @@ class PracticeCompositeWidget(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
 
-        vbox = QtWidgets.QVBoxLayout()
-        self.setLayout(vbox)
+        vbox_l2 = QtWidgets.QVBoxLayout()
+        self.setLayout(vbox_l2)
 
         # Creating widgets
         # ..for ten practices (left column)
-        habits_label = QtWidgets.QLabel("<h3>Journals</h3>")
-        vbox.addWidget(habits_label)
+        ##habits_label = QtWidgets.QLabel("<h3>Journals</h3>")
+        ##vbox_l2.addWidget(habits_label)
         self.list_widget = QtWidgets.QListWidget()
         self.list_widget.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
-        vbox.addWidget(self.list_widget)
+        vbox_l2.addWidget(self.list_widget)
         self.list_widget.currentItemChanged.connect(self.on_current_row_changed)
         self.list_widget.itemPressed.connect(self.on_item_selection_changed)
         # -itemClicked didn't work, unknown why (it worked on the first click but never when running in debug mode)
         # -currentItemChanged cannot be used here since it is activated before the list of selected items is updated
         # ..for adding new habit
-        self.adding_new_practice_ey = QtWidgets.QLineEdit()
-        vbox.addWidget(self.adding_new_practice_ey)
-        self.adding_new_practice_bn = QtWidgets.QPushButton("Add new journal")
-        vbox.addWidget(self.adding_new_practice_bn)
+
+        hbox_l3 = QtWidgets.QHBoxLayout()
+        vbox_l2.addLayout(hbox_l3)
+        self.adding_new_practice_qle = QtWidgets.QLineEdit()
+        self.adding_new_practice_qle.setPlaceholderText("New reminder")
+        hbox_l3.addWidget(self.adding_new_practice_qle)
+        self.adding_new_practice_bn = QtWidgets.QPushButton("Add")
+        hbox_l3.addWidget(self.adding_new_practice_bn)
         self.adding_new_practice_bn.clicked.connect(self.on_add_new_practice_button_pressed)
 
 
     def on_add_new_practice_button_pressed(self):
-        text_sg = self.adding_new_practice_ey.text().strip()  # strip is needed to remove a newline at the end (why?)
+        text_sg = self.adding_new_practice_qle.text().strip()  # strip is needed to remove a newline at the end (why?)
         if not (text_sg and text_sg.strip()):
             return
-        #######self.list_widget.setCurrentRow(-1)  # -experimental
-        self.new_practice_button_pressed_signal.emit(text_sg)
-        self.adding_new_practice_ey.clear()
+        bwb_model.ReminderM.add(text_sg, bwb_global.active_journal_id_it)
+        self.adding_new_practice_qle.clear()
+        self.update_gui()
+
+    """
+    def on_practice_new_button_pressed_signal(self, i_practice_text_sg):
+        bwb_model.ReminderM.add(i_practice_text_sg, bwb_global.active_journal_id_it)
+        self.update_gui()
+    """
 
     def on_current_row_changed(self):
         self.current_row_changed_signal.emit(self.list_widget.currentRow())
@@ -73,7 +84,7 @@ class PracticeCompositeWidget(QtWidgets.QWidget):
         """
         self.list_widget.clear()
         counter = 0
-        for practice_item in bwb_model.ReminderM.get_all():
+        for practice_item in bwb_model.ReminderM.get_all_for_journal(bwb_global.active_journal_id_it):
             # Important: "Alternatively, if you want the widget to have a fixed size based on its contents,
             # you can call QLayout::setSizeConstraint(QLayout::SetFixedSize);"
             # https://doc.qt.io/qt-5/qwidget.html#setSizePolicy-1

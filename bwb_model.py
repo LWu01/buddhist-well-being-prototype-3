@@ -84,9 +84,9 @@ def initial_schema_and_setup(i_db_conn):
 
     journal_list = [
         ("Gratitude",),
-        ("Virtue",),
-        ("Self-compassion",),
-        ("Friends",),
+        ("Practice",),
+        ("Livelihood",),
+        ("Study",),
     ]
     i_db_conn.executemany(
         "INSERT INTO " + DbSchemaM.JournalTable.name + " ("
@@ -94,20 +94,6 @@ def initial_schema_and_setup(i_db_conn):
         + ")"
         + " VALUES (?)", journal_list
     )
-    reminder_list = [
-        ("Meditation", "Did I practice meditation today?", 0),
-        ("Tai Chi or mindful movements", "Did I practice Tai Chi or did I do mindful movements?", 1),
-        ("Dharma talk", "Did I listen to a Dharma talk?", 0)
-    ]
-    i_db_conn.executemany(
-        "INSERT INTO " + DbSchemaM.ReminderTable.name + " ("
-        + DbSchemaM.ReminderTable.Cols.title + ", "
-        + DbSchemaM.ReminderTable.Cols.description + ", "
-        + DbSchemaM.ReminderTable.Cols.journal_ref
-        + ")"
-        + " VALUES (?, ?, ?)", reminder_list
-    )
-
 
     populate_db_with_test_data()
 
@@ -223,14 +209,15 @@ class ReminderM:
         self.journal_ref_it = i_journal_ref_it
 
     @staticmethod
-    def add(i_title_sg):
+    def add(i_title_sg, i_journal_ref_it):
         db_connection = DbHelperM.get_db_connection()
         db_cursor = db_connection.cursor()
         db_cursor.execute(
             "INSERT INTO " + DbSchemaM.ReminderTable.name + "("
-            + DbSchemaM.ReminderTable.Cols.title
-            + ") VALUES (?)",
-            (i_title_sg,)
+            + DbSchemaM.ReminderTable.Cols.title + ", "
+            + DbSchemaM.ReminderTable.Cols.journal_ref
+            + ") VALUES (?, ?)",
+            (i_title_sg, i_journal_ref_it)
         )
         db_connection.commit()
 
@@ -280,6 +267,24 @@ class ReminderM:
         db_cursor_result = db_cursor.execute(
             "SELECT * FROM " + DbSchemaM.ReminderTable.name
             + " ORDER BY " + orderby_sg + " ASC"
+        )
+        reminder_db_te_list = db_cursor_result.fetchall()
+        for reminder_db_te in reminder_db_te_list:
+            ret_reminder_list.append(ReminderM(*reminder_db_te))
+        db_connection.commit()
+        return ret_reminder_list
+
+    @staticmethod
+    def get_all_for_journal(i_journal_id_it: int) -> List:
+        ret_reminder_list = []
+        db_connection = DbHelperM.get_db_connection()
+        db_cursor = db_connection.cursor()
+        orderby_sg = DbSchemaM.ReminderTable.Cols.id
+        db_cursor_result = db_cursor.execute(
+            "SELECT * FROM " + DbSchemaM.ReminderTable.name
+            + " WHERE " + DbSchemaM.ReminderTable.Cols.journal_ref + " = ?"
+            + " ORDER BY " + orderby_sg + " ASC",
+            (i_journal_id_it,)
         )
         reminder_db_te_list = db_cursor_result.fetchall()
         for reminder_db_te in reminder_db_te_list:
@@ -533,6 +538,27 @@ def populate_db_with_test_data():
 
     DiaryM.add(time.time(), "Dear Buddha, today i have been practicing meditation before meeting a friend of mine", 2)
     DiaryM.add(time.time(), "Dear Buddha, i'm grateful for being able to breathe!", 1)
-    DiaryM.add(time.time(), "Most difficult today was my negative thinking", 3)
+    DiaryM.add(time.time(), "Most difficult today was my negative thinking", 2)
     DiaryM.add(time.time(), "Grateful for having a place to live, a roof over my head, food to eat, and people to care for", 1)
+
+    ReminderM.add("Meditation", 1)
+    ReminderM.add("Tai Chi or mindful movements", 2)
+    ReminderM.add("Dharma talk", 1)
+
+    """
+    reminder_list = [
+        ("Meditation", "Did I practice meditation today?", 0),
+        ("Tai Chi or mindful movements", "Did I practice Tai Chi or did I do mindful movements?", 1),
+        ("Dharma talk", "Did I listen to a Dharma talk?", 0)
+    ]
+    i_db_conn.executemany(
+        "INSERT INTO " + DbSchemaM.ReminderTable.name + " ("
+        + DbSchemaM.ReminderTable.Cols.title + ", "
+        + DbSchemaM.ReminderTable.Cols.description + ", "
+        + DbSchemaM.ReminderTable.Cols.journal_ref
+        + ")"
+        + " VALUES (?, ?, ?)", reminder_list
+    )
+    """
+
 

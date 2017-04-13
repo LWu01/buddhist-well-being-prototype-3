@@ -2,13 +2,14 @@ import bwb_global
 import bwb_model
 import bwb_date_time_dialog
 import datetime
-import time
 from PyQt5 import QtWidgets
 from PyQt5 import QtCore
 from PyQt5 import QtGui
 
 
 MY_WIDGET_NAME = "test-name"
+BACKGROUND_IMAGE_PATH_STR = "Gerald-G-Yoga-Poses-stylized-1-300px-CC0.png"
+NO_ENTRY_CLICKED_INT = -1
 
 
 class DiaryListCompositeWidget(QtWidgets.QWidget):
@@ -17,48 +18,34 @@ class DiaryListCompositeWidget(QtWidgets.QWidget):
     http://stackoverflow.com/questions/20041385/python-pyqt-setting-scroll-area
     """
 
-    add_text_to_diary_button_pressed_signal = QtCore.pyqtSignal(str, int)
     context_menu_change_date_signal = QtCore.pyqtSignal()
     context_menu_delete_signal = QtCore.pyqtSignal()
 
-    id_for_entry_last_clicked_it = None
+    id_for_entry_last_clicked_it = NO_ENTRY_CLICKED_INT
 
     def __init__(self):
         super().__init__()
 
         self.vbox_l2 = QtWidgets.QVBoxLayout()
-        self.scroll_list_widget_w3 = QtWidgets.QWidget()
-        self.scroll_area_w2 = QtWidgets.QScrollArea()
-        self.scroll_area_w2.setWidget(self.scroll_list_widget_w3)
-        #hbox_l4.addStretch()
-        self.scroll_area_w2.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
-        self.scroll_area_w2.setWidgetResizable(True)
-        self.scroll_list_vbox_l4 = QtWidgets.QVBoxLayout()
-        self.scroll_list_widget_w3.setLayout(self.scroll_list_vbox_l4)
-        ###self.my_widget_w5.setMaximumWidth(300)
-        self.vbox_l2.addWidget(self.scroll_area_w2)
+        self.scroll_area_w3 = QtWidgets.QScrollArea()
+        self.scroll_area_w3.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
+        self.scroll_area_w3.setWidgetResizable(True)
+        self.scroll_list_widget_w4 = QtWidgets.QWidget()
+        self.scroll_list_widget_w4.setObjectName(MY_WIDGET_NAME)
+        self.scroll_list_widget_w4.setStyleSheet("#" + MY_WIDGET_NAME
+             + "{" + "background-image:url(\"" + BACKGROUND_IMAGE_PATH_STR
+             + "\"); background-position:center; background-repeat:no-repeat" + "}")
+        self.scroll_list_vbox_l5 = QtWidgets.QVBoxLayout()
+        self.scroll_list_widget_w4.setLayout(self.scroll_list_vbox_l5)
+        self.scroll_area_w3.setWidget(self.scroll_list_widget_w4)
+        self.vbox_l2.addWidget(self.scroll_area_w3)
         self.setLayout(self.vbox_l2)
-
-        self.scroll_list_widget_w3.setObjectName(MY_WIDGET_NAME)
-        self.scroll_list_widget_w3.setStyleSheet("#" + MY_WIDGET_NAME + "{" + "background-image:url(\"Gerald-G-Yoga-Poses-stylized-1-300px-CC0.png\"); background-position:center; background-repeat:no-repeat" + "}")
 
     # The same function is used for all the "rows"
     def on_custom_label_mouse_pressed(self, i_qmouseevent, i_diary_id_it):
         print("button clicked: " + str(i_qmouseevent.button()))
         print("diary id: " + str(i_diary_id_it))
         self.id_for_entry_last_clicked_it = i_diary_id_it
-
-    def on_item_pressed(self, i_qmouseevent):
-        print("button clicked: " + str(i_qmouseevent.button()))
-
-        ##self.row_last_clicked
-        ###asdf
-
-        """
-        row_index_it = i_listwidgetitem.listWidget().row(i_listwidgetitem)
-        print("cell clicked -- row = " + str(row_index_it))
-        self.row_last_clicked = i_listwidgetitem
-        """
 
     def contextMenuEvent(self, i_QContextMenuEvent):
         """
@@ -116,10 +103,8 @@ class DiaryListCompositeWidget(QtWidgets.QWidget):
             pass  # -do nothing
 
     def update_gui(self):
-        clear_widget_and_layout_children(self.scroll_list_vbox_l4)  # -clearing
-
+        clear_widget_and_layout_children(self.scroll_list_vbox_l5)
         if bwb_global.active_view_viewenum == bwb_global.ViewEnum.journal_monthly_view:
-
             qdate = QtCore.QDate(bwb_global.shown_year_it, bwb_global.shown_month_1to12_it, 1)
             qdatetime = QtCore.QDateTime(qdate)
             start_of_month_as_unix_time_it = qdatetime.toMSecsSinceEpoch() // 1000
@@ -129,7 +114,7 @@ class DiaryListCompositeWidget(QtWidgets.QWidget):
                 label_text_sg = diary_entry.diary_text.strip()
 
                 hbox_l6 = QtWidgets.QHBoxLayout()
-                self.scroll_list_vbox_l4.addLayout(hbox_l6)
+                self.scroll_list_vbox_l5.addLayout(hbox_l6)
 
                 journal_qlabel = QtWidgets.QLabel("-")
                 hbox_l6.addWidget(journal_qlabel, stretch=1)
@@ -143,12 +128,11 @@ class DiaryListCompositeWidget(QtWidgets.QWidget):
                 #hbox_l6.addStretch()
 
         elif bwb_global.active_view_viewenum == bwb_global.ViewEnum.diary_daily_overview:
-
-            for diary_entry in bwb_model.DiaryM.get_all_for_active_day():  # -TODO: Change to month
+            for diary_entry in bwb_model.DiaryM.get_all_for_active_day():
                 label_text_sg = diary_entry.diary_text.strip()
 
                 hbox_l6 = QtWidgets.QHBoxLayout()
-                self.scroll_list_vbox_l4.addLayout(hbox_l6)
+                self.scroll_list_vbox_l5.addLayout(hbox_l6)
 
                 journalm = bwb_model.JournalM.get(diary_entry.journal_ref_it)
                 journal_sg = str(journalm.title_sg)
@@ -163,9 +147,9 @@ class DiaryListCompositeWidget(QtWidgets.QWidget):
         else:
             pass
 
-        self.scroll_list_vbox_l4.addStretch()
-        #####self.scroll_list_vbox.scrollToBottom() asdf
+        self.scroll_list_vbox_l5.addStretch()
 
+        # TODO: Scroll to bottom
 
 
 def is_same_day(i_first_date_it, i_second_date_it):
@@ -193,9 +177,6 @@ class CustomQLabel(QtWidgets.QLabel):
         self.diary_entry_id = i_diary_entry_id
 
     # Overridden
-    # Please note that this is not an event, but the event handler!
+    # Please note that this is the event handler (not an event!)
     def mousePressEvent(self, i_qmouseevent):
         self.mouse_pressed_signal.emit(i_qmouseevent, self.diary_entry_id)
-
-
-

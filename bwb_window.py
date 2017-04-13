@@ -4,10 +4,8 @@ from PyQt5 import QtCore
 
 import bwb_model
 import bwb_central
-import bwb_practice_details
 import bwb_practices
 import bwb_wisdom
-import bwb_help
 import bwb_calendar
 import bwb_global
 
@@ -24,7 +22,7 @@ class EventSource(enum.Enum):
 
 class WellBeingWindow(QtWidgets.QMainWindow):
     """
-    View and controller
+    The main window of the application
     Suffix explanation:
     _w: widget
     _l: layout
@@ -39,22 +37,20 @@ class WellBeingWindow(QtWidgets.QMainWindow):
         self.showMaximized()
         self.setWindowTitle("Buddhist Practice Diary [BWB prototype 3]")
         self.setWindowIcon(QtGui.QIcon("icon.png"))
+        self.setStyleSheet("selection-background-color:#579e44");
 
         # Setup of widgets..
         # ..calendar
         calendar_dock_qdw2 = QtWidgets.QDockWidget("Calendar", self)
+        calendar_dock_qdw2.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea)
+        calendar_dock_qdw2.setFeatures(QtWidgets.QDockWidget.NoDockWidgetFeatures)
         self.custom_calendar_w3 = bwb_calendar.CompositeCalendarWidget()
         self.custom_calendar_w3.setFixedHeight(200)
-        calendar_dock_qdw2.setWidget(self.custom_calendar_w3)
-        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, calendar_dock_qdw2)
-        calendar_dock_qdw2.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea)
         self.custom_calendar_w3.calendar_widget.selectionChanged.connect(self.on_calendar_selection_changed)
         self.custom_calendar_w3.calendar_widget.currentPageChanged.connect(self.on_calendar_page_changed)
-        calendar_dock_qdw2.setFeatures(QtWidgets.QDockWidget.NoDockWidgetFeatures)
-
-        # TODO: Next day with entry, previous day with entry, TODAY
-
-        # ..habits/practices
+        calendar_dock_qdw2.setWidget(self.custom_calendar_w3)
+        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, calendar_dock_qdw2)
+        # ..reminders
         self.reminders_dock_qw2 = QtWidgets.QDockWidget("Journal Reminders", self)
         self.reminders_dock_qw2.setFeatures(
             QtWidgets.QDockWidget.DockWidgetMovable |
@@ -64,94 +60,16 @@ class WellBeingWindow(QtWidgets.QMainWindow):
         self.reminders_composite_w3.current_row_changed_signal.connect(self.on_practice_current_row_changed)
         self.reminders_dock_qw2.setWidget(self.reminders_composite_w3)
         self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.reminders_dock_qw2)
-
-        """
-        # ..practice details
-        practice_details_dock_qw2 = QtWidgets.QDockWidget("Journal Details", self)
-        self.practice_details_composite_w3 = bwb_practice_details.PracticeCompositeWidget()
-        practice_details_dock_qw2.setWidget(self.practice_details_composite_w3)
-        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, practice_details_dock_qw2)
-        self.practice_details_composite_w3.time_of_day_state_changed_signal.connect(
-            self.on_practice_details_time_of_day_state_changed)
-        """
-
-        # ..quotes
-        # TODO: A stackedwidget, perhaps with two arrows above for going back and fwd (or just one to switch randomly)
-
-        """
-        # ..help
-        help_dock_qw2 = QtWidgets.QDockWidget("Help", self)
-        self.help_composite_w3 = bwb_help.HelpCompositeWidget()
-        help_dock_qw2.setWidget(self.help_composite_w3)
-        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, help_dock_qw2)
-        """
-
-        # ..central tab widget area
-        self.central_tab_widget_w3 = bwb_central.CompositeCentralWidget()
-        self.setCentralWidget(self.central_tab_widget_w3)
-        self.central_tab_widget_w3.journal_button_toggled_signal.connect(self.update_gui)
-
+        # ..central widget (which **holds the diary** etc)
+        self.central_widget_w3 = bwb_central.CompositeCentralWidget()
+        self.setCentralWidget(self.central_widget_w3)
+        self.central_widget_w3.journal_button_toggled_signal.connect(self.update_gui)
         # ..wisdom
         wisdom_dock_qw2 = QtWidgets.QDockWidget("Wisdom", self)
         self.wisdom_composite_w3 = bwb_wisdom.WisdomCompositeWidget()
         wisdom_dock_qw2.setWidget(self.wisdom_composite_w3)
         self.addDockWidget(QtCore.Qt.RightDockWidgetArea, wisdom_dock_qw2)
         wisdom_dock_qw2.setAllowedAreas(QtCore.Qt.RightDockWidgetArea)
-
-        # ..blessings
-        blessings_dock_qw2 = QtWidgets.QDockWidget("Blessings", self)
-        self.blessings_qlw = QtWidgets.QListWidget()
-        blessings_list = []
-        blessings_list.append("Not to associate with fools")
-        blessings_list.append("To associate with the wise")
-        blessings_list.append("To pay respects where they are due")
-        blessings_list.append("To reside in a suitable location")
-        blessings_list.append("To have previously done meritorious deeds")
-        blessings_list.append("To be heading in the right direction")
-        blessings_list.append("To have much learning")
-        blessings_list.append("To be skilled and knowledgeable")
-        blessings_list.append("To be restrained by a moral code")
-        blessings_list.append("To have beautiful speech")
-        blessings_list.append("To be a support for your parents")
-        blessings_list.append("The cherishing of wife")
-        blessings_list.append("The cherishing of children")
-        blessings_list.append("To make one's livelihood without difficulty")
-        blessings_list.append("To make gifts")
-        blessings_list.append("To live in accord with the Dhamma")
-        blessings_list.append("To cherish one's relatives")
-        blessings_list.append("To do blameless actions")
-        blessings_list.append("To cease and abstain from evil")
-        blessings_list.append("To refrain from intoxicants")
-        blessings_list.append("Not to be heedless of the Dhamma")
-        blessings_list.append("To be respectful")
-        blessings_list.append("To be humble")
-        blessings_list.append("To be content")
-        blessings_list.append("To have gratitude")
-        blessings_list.append("To hear the Dhamma at the right time")
-        blessings_list.append("To have patience")
-        blessings_list.append("To be easy to admonish")
-        blessings_list.append("The sight of monks")
-        blessings_list.append("To discuss the Dhamma at a suitable time")
-        blessings_list.append("To practice austerities")
-        blessings_list.append("To lead the Holy Life")
-        blessings_list.append("Seeing the Noble Truths")
-        blessings_list.append("The realization of Nibbana")
-        blessings_list.append("A mind unshaken by contact with the world")
-        blessings_list.append("Sorrowlessness")
-        blessings_list.append("Stainlessness")
-        blessings_list.append("Secure")
-        self.blessings_qlw.addItems(blessings_list)
-        blessings_dock_qw2.setWidget(self.blessings_qlw)
-        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, blessings_dock_qw2)
-
-        """
-        # ..image
-        image_qll = QtWidgets.QLabel()
-        image_qll.setPixmap(QtGui.QPixmap("Gerald-G-Yoga-Poses-stylized-1-300px-CC0.png"))
-        image_dock_qw2 = QtWidgets.QDockWidget("Image", self)
-        image_dock_qw2.setWidget(image_qll)
-        self.addDockWidget(QtCore.Qt.RightDockWidgetArea, image_dock_qw2)
-        """
 
         # Creating the menu bar..
         # ..setup of actions
@@ -164,15 +82,12 @@ class WellBeingWindow(QtWidgets.QMainWindow):
         about_qaction = QtWidgets.QAction("About", self)
         about_qaction.triggered.connect(self.show_about_box)
         manual_qaction = QtWidgets.QAction("Manual", self)
-        ###manual_qaction.triggered.connect()
-        inline_help_qaction = QtWidgets.QAction("Inline help", self)
-        ###inline_help_qaction.triggered.connect()
+        ###inline_help_qaction = QtWidgets.QAction("Inline help", self)
         backup_qaction = QtWidgets.QAction("Backup db", self)
         backup_qaction.triggered.connect(bwb_model.backup_db_file)
         dear_buddha_qaction = QtWidgets.QAction("Prepend diary entries with \"Dear Buddha\"", self)
         dear_buddha_qaction.triggered.connect(self.toggle_dear_buddha_text)
         wisdom_window_qaction = wisdom_dock_qw2.toggleViewAction()
-        blessings_window_qaction = blessings_dock_qw2.toggleViewAction()
         # ..adding menu items
         self.menu_bar = self.menuBar()
         file_menu = self.menu_bar.addMenu("&File")
@@ -187,22 +102,44 @@ class WellBeingWindow(QtWidgets.QMainWindow):
         tools_menu.addAction(dear_buddha_qaction)
         help_menu.addAction(about_qaction)
         help_menu.addAction(manual_qaction)
-        help_menu.addAction(inline_help_qaction)
         window_menu.addAction(wisdom_window_qaction)
-        window_menu.addAction(blessings_window_qaction)
-
-        self.setStyleSheet("selection-background-color:#89D322");
 
         self.update_gui()
 
+        """
+        # ..practice details
+        practice_details_dock_qw2 = QtWidgets.QDockWidget("Journal Details", self)
+        self.practice_details_composite_w3 = bwb_practice_details.PracticeCompositeWidget()
+        practice_details_dock_qw2.setWidget(self.practice_details_composite_w3)
+        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, practice_details_dock_qw2)
+        self.practice_details_composite_w3.time_of_day_state_changed_signal.connect(
+            self.on_practice_details_time_of_day_state_changed)
+        """
+        # ..quotes
+        # TODO: A stackedwidget, perhaps with two arrows above for going back and fwd (or just one to switch randomly)
+        """
+        # ..help
+        help_dock_qw2 = QtWidgets.QDockWidget("Help", self)
+        self.help_composite_w3 = bwb_help.HelpCompositeWidget()
+        help_dock_qw2.setWidget(self.help_composite_w3)
+        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, help_dock_qw2)
+        """
+        """
+        # ..image
+        image_qll = QtWidgets.QLabel()
+        image_qll.setPixmap(QtGui.QPixmap("Gerald-G-Yoga-Poses-stylized-1-300px-CC0.png"))
+        image_dock_qw2 = QtWidgets.QDockWidget("Image", self)
+        image_dock_qw2.setWidget(image_qll)
+        self.addDockWidget(QtCore.Qt.RightDockWidgetArea, image_dock_qw2)
+        """
+
     def toggle_dear_buddha_text(self):
-        self.show()
-        old_text_str = self.central_tab_widget_w3.adding_text_to_diary_textedit_w6.toPlainText()
+        old_text_str = self.central_widget_w3.adding_text_to_diary_textedit_w6.toPlainText()
         new_text_str = "Dear Buddha, "
         if old_text_str.startswith(new_text_str):
             new_text_str_length_int = len(new_text_str)
             new_text_str = old_text_str[new_text_str_length_int:]
-        self.central_tab_widget_w3.adding_text_to_diary_textedit_w6.setText(new_text_str)
+        self.central_widget_w3.adding_text_to_diary_textedit_w6.setText(new_text_str)
 
     def on_calendar_selection_changed(self):
         print(str(self.custom_calendar_w3.calendar_widget.selectedDate()))
@@ -254,7 +191,7 @@ class WellBeingWindow(QtWidgets.QMainWindow):
             pass
             ##self.practice_composite_w3.update_gui()
 
-        self.central_tab_widget_w3.update_gui()
+        self.central_widget_w3.update_gui()
 
         self.custom_calendar_w3.update_gui()
 

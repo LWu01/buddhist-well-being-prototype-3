@@ -378,29 +378,10 @@ class DiaryM:
         return ret_diary_list
 
     @staticmethod
-    def get_all_for_journal_and_day(i_journal_id_it: int, i_start_of_day_as_unix_time_it: int, i_reverse_bl=True):
-        ret_diary_list = []
-        db_connection = DbHelperM.get_db_connection()
-        db_cursor = db_connection.cursor()
-        db_cursor_result = db_cursor.execute(
-            "SELECT * FROM " + DbSchemaM.DiaryTable.name
-            + " WHERE " + DbSchemaM.DiaryTable.Cols.date_added + ">=" + str(i_start_of_day_as_unix_time_it)
-            + " AND " + DbSchemaM.DiaryTable.Cols.date_added + "<" + str(i_start_of_day_as_unix_time_it + 24 * 3600)
-            + " AND " + DbSchemaM.DiaryTable.Cols.journal_ref + "=" + str(i_journal_id_it)
-        )
-        diary_db_te_list = db_cursor_result.fetchall()
-        for diary_db_te in diary_db_te_list:
-            ret_diary_list.append(DiaryM(*diary_db_te))
-        db_connection.commit()
-
-        if i_reverse_bl:
-            ret_diary_list.reverse()
-        return ret_diary_list
-
-    @staticmethod
     def get_all_for_journal_and_month(i_journal_id_it, i_start_of_month_as_unix_time_it,
             i_number_of_days_in_month_it, i_reverse_bl=True):
         ret_diary_list = []
+        t_direction_sg = "DESC"
         db_connection = DbHelperM.get_db_connection()
         db_cursor = db_connection.cursor()
         db_cursor_result = db_cursor.execute(
@@ -409,6 +390,7 @@ class DiaryM:
             + " AND " + DbSchemaM.DiaryTable.Cols.date_added + "<"
             + str(i_start_of_month_as_unix_time_it + 24 * 3600 * i_number_of_days_in_month_it)
             + " AND " + DbSchemaM.DiaryTable.Cols.journal_ref + "=" + str(i_journal_id_it)
+            + " ORDER BY " + DbSchemaM.DiaryTable.Cols.date_added + " " + t_direction_sg
         )
         diary_db_te_list = db_cursor_result.fetchall()
         for diary_db_te in diary_db_te_list:
@@ -445,58 +427,6 @@ class DiaryM:
             ret_diary_list.reverse()
         return ret_diary_list
 
-    @staticmethod
-    def get_all_for_active_day_and_journal(i_journal_id_it, i_reverse_bl=True):
-        start_of_day_datetime = datetime.datetime(
-            year=bwb_global.active_date_qdate.year(),
-            month=bwb_global.active_date_qdate.month(),
-            day=bwb_global.active_date_qdate.day()
-        )
-        start_of_day_unixtime_it = int(start_of_day_datetime.timestamp())
-
-        ret_diary_list = []
-        db_connection = DbHelperM.get_db_connection()
-        db_cursor = db_connection.cursor()
-        db_cursor_result = db_cursor.execute(
-            "SELECT * FROM " + DbSchemaM.DiaryTable.name
-            + " WHERE " + DbSchemaM.DiaryTable.Cols.date_added + ">=" + str(start_of_day_unixtime_it)
-            + " AND " + DbSchemaM.DiaryTable.Cols.date_added + "<" + str(start_of_day_unixtime_it + 24 * 3600)
-            + " AND " + DbSchemaM.DiaryTable.Cols.journal_ref + "=" + str(i_journal_id_it)
-        )
-        diary_db_te_list = db_cursor_result.fetchall()
-        for diary_db_te in diary_db_te_list:
-            ret_diary_list.append(DiaryM(*diary_db_te))
-        db_connection.commit()
-
-        if i_reverse_bl:
-            ret_diary_list.reverse()
-        return ret_diary_list
-
-    @staticmethod
-    def get_all_for_journal(i_journal_id_it, i_reverse_bl=True):
-        start_of_day_datetime = datetime.datetime(
-            year=bwb_global.active_date_qdate.year(),
-            month=bwb_global.active_date_qdate.month(),
-            day=bwb_global.active_date_qdate.day()
-        )
-        start_of_day_unixtime_it = int(start_of_day_datetime.timestamp())
-
-        ret_diary_list = []
-        db_connection = DbHelperM.get_db_connection()
-        db_cursor = db_connection.cursor()
-        db_cursor_result = db_cursor.execute(
-            "SELECT * FROM " + DbSchemaM.DiaryTable.name
-            + " WHERE " + DbSchemaM.DiaryTable.Cols.journal_ref + "=" + str(i_journal_id_it)
-        )
-        diary_db_te_list = db_cursor_result.fetchall()
-        for diary_db_te in diary_db_te_list:
-            ret_diary_list.append(DiaryM(*diary_db_te))
-        db_connection.commit()
-
-        if i_reverse_bl:
-            ret_diary_list.reverse()
-        return ret_diary_list
-
 
 def export_all():
     csv_writer = csv.writer(open("exported.csv", "w"))
@@ -521,6 +451,8 @@ def populate_db_with_test_data():
     DiaryM.add(time.time(), "Dear Buddha, i'm grateful for being able to breathe!", 1)
     DiaryM.add(time.time() - delta_day_it, "Most difficult today was my negative thinking", 2)
     DiaryM.add(time.time() - 7 * delta_day_it, "Grateful for having a place to live, a roof over my head, food to eat, and people to care for", 1)
+    DiaryM.add(time.time() - 7 * delta_day_it, "Grateful for the blue sky and the white clouds", 1)
+    DiaryM.add(time.time() - 7 * delta_day_it, "Happy to be alive!", 1)
 
     ReminderM.add("Meditation", 1)
     ReminderM.add("Tai Chi or mindful movements", 2)

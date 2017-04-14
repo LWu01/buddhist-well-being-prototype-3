@@ -23,9 +23,6 @@ class CompositeCentralWidget(QtWidgets.QWidget):
 
         journalm_list = bwb_model.JournalM.get_all()
 
-
-
-
         self.vbox_l2 = QtWidgets.QVBoxLayout()
         self.setLayout(self.vbox_l2)
 
@@ -55,13 +52,11 @@ class CompositeCentralWidget(QtWidgets.QWidget):
         self.diary_widget.context_menu_delete_signal.connect(self.on_diary_context_menu_delete)
         self.vbox_l2.addWidget(self.diary_widget)
 
-
         # Adding new diary entry..
         # ..journals
         self.journals_hbox_l3 = QtWidgets.QHBoxLayout()
         self.journals_hbox_l3.addStretch()
         self.vbox_l2.addLayout(self.journals_hbox_l3)
-
 
         self.journal_qbuttongroup = QtWidgets.QButtonGroup(self)  # -the parent has to be set for exclusive to work
         self.journal_qbuttongroup.setExclusive(True)
@@ -74,7 +69,6 @@ class CompositeCentralWidget(QtWidgets.QWidget):
             self.journals_hbox_l3.addWidget(journal_button_qpb)
             if journalm.id_it == bwb_global.active_journal_id_it:
                 journal_button_qpb.setChecked(True)
-
 
         self.journals_hbox_l3.addStretch()
 
@@ -127,7 +121,6 @@ class CompositeCentralWidget(QtWidgets.QWidget):
         self.update_gui()
         self.journal_button_toggled_signal.emit()
 
-
     def update_gui(self):
         if bwb_global.active_view_viewenum == bwb_global.ViewEnum.journal_monthly_view:
             active_journalm = bwb_model.JournalM.get(bwb_global.active_journal_id_it)
@@ -152,7 +145,8 @@ class CompositeCentralWidget(QtWidgets.QWidget):
 
         print("t_unix_time_it = " + str(unix_time_it))
 
-        bwb_model.DiaryM.add(unix_time_it, notes_sg, bwb_global.active_journal_id_it)  # TODO: Change from currentIndex
+        bwb_model.DiaryM.add(unix_time_it, notes_sg, bwb_global.active_journal_id_it)
+        # -TODO: Change from currentIndex
         self.adding_text_to_diary_textedit_w6.clear()
         self.update_gui()
 

@@ -2,6 +2,7 @@ import bwb_global
 import bwb_model
 import bwb_date_time_dialog
 import datetime
+import time
 from PyQt5 import QtWidgets
 from PyQt5 import QtCore
 from PyQt5 import QtGui
@@ -107,46 +108,56 @@ class DiaryListCompositeWidget(QtWidgets.QWidget):
 
     def update_gui(self):
         clear_widget_and_layout_children(self.scroll_list_vbox_l5)
+        qdate = QtCore.QDate(bwb_global.shown_year_it, bwb_global.shown_month_1to12_it, 1)
+        qdatetime = QtCore.QDateTime(qdate)
+        start_of_month_as_unix_time_it = qdatetime.toMSecsSinceEpoch() // 1000
+
         if bwb_global.active_view_viewenum == bwb_global.ViewEnum.journal_monthly_view:
-            qdate = QtCore.QDate(bwb_global.shown_year_it, bwb_global.shown_month_1to12_it, 1)
-            qdatetime = QtCore.QDateTime(qdate)
-            start_of_month_as_unix_time_it = qdatetime.toMSecsSinceEpoch() // 1000
-
-            for diary_entry in bwb_model.DiaryM.get_all_for_journal_and_month(
-                    bwb_global.active_journal_id_it, start_of_month_as_unix_time_it, qdate.daysInMonth()):
-                label_text_sg = diary_entry.diary_text.strip()
-
-                hbox_l6 = QtWidgets.QHBoxLayout()
-                self.scroll_list_vbox_l5.addLayout(hbox_l6)
-
-                journal_qlabel = QtWidgets.QLabel("-")
-                hbox_l6.addWidget(journal_qlabel, stretch=1)
-
-                listitem_cqll = CustomQLabel(label_text_sg, diary_entry.id)
-                listitem_cqll.setWordWrap(True)
-                listitem_cqll.mouse_pressed_signal.connect(self.on_custom_label_mouse_pressed)
-
-                hbox_l6.addWidget(listitem_cqll, stretch=4)
-
+            diarym_list = bwb_model.DiaryM.get_all_for_journal_and_month(
+                bwb_global.active_journal_id_it, start_of_month_as_unix_time_it, qdate.daysInMonth())
         elif bwb_global.active_view_viewenum == bwb_global.ViewEnum.diary_daily_overview:
-            for diary_entry in bwb_model.DiaryM.get_all_for_active_day():
-                label_text_sg = diary_entry.diary_text.strip()
-
-                hbox_l6 = QtWidgets.QHBoxLayout()
-                self.scroll_list_vbox_l5.addLayout(hbox_l6)
-
-                journalm = bwb_model.JournalM.get(diary_entry.journal_ref_it)
-                journal_sg = str(journalm.title_sg)
-                journal_qlabel = QtWidgets.QLabel(journal_sg)
-                hbox_l6.addWidget(journal_qlabel, stretch=1)
-
-                listitem_cqll = CustomQLabel(label_text_sg, diary_entry.id)
-                listitem_cqll.setWordWrap(True)
-                listitem_cqll.mouse_pressed_signal.connect(self.on_custom_label_mouse_pressed)
-
-                hbox_l6.addWidget(listitem_cqll, stretch=4)
+            diarym_list = bwb_model.DiaryM.get_all_for_active_day()
         else:
             pass
+
+        old_date_str = ""
+        for diary_entry in diarym_list:
+            label_text_sg = diary_entry.diary_text.strip()
+
+            hbox_l6 = QtWidgets.QHBoxLayout()
+            self.scroll_list_vbox_l5.addLayout(hbox_l6)
+
+            date_string_format_str = "%A"  # -weekday
+            if diary_entry.date_added_it < time.time() - 60 * 60 * 24 * 7:
+                date_string_format_str = "%-d %b"  # -weekday
+
+            left_qlabel = QtWidgets.QLabel("")
+            if bwb_global.active_view_viewenum == bwb_global.ViewEnum.journal_monthly_view:
+                date_str = datetime.datetime.fromtimestamp(diary_entry.date_added_it).strftime(
+                    date_string_format_str)
+                if old_date_str == date_str:
+                    left_qlabel.setText("")
+                elif is_same_day(diary_entry.date_added_it, time.time()):
+                    left_qlabel.setText("Today")
+                else:
+                    left_qlabel.setText(date_str)
+                old_date_str = date_str
+            elif bwb_global.active_view_viewenum == bwb_global.ViewEnum.diary_daily_overview:
+                journalm = bwb_model.JournalM.get(diary_entry.journal_ref_it)
+                journal_sg = str(journalm.title_sg)
+                left_qlabel = QtWidgets.QLabel(journal_sg)
+            else:
+                pass
+
+            hbox_l6.addWidget(left_qlabel, stretch=1)
+
+            listitem_cqll = CustomQLabel(label_text_sg, diary_entry.id)
+            listitem_cqll.setWordWrap(True)
+            listitem_cqll.mouse_pressed_signal.connect(self.on_custom_label_mouse_pressed)
+
+            hbox_l6.addWidget(listitem_cqll, stretch=5)
+
+            hbox_l6.addWidget(QtWidgets.QLabel("one tag"), stretch=1)
 
         self.scroll_list_vbox_l5.addStretch()
 

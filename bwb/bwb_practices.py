@@ -1,12 +1,11 @@
 
-from PyQt5 import QtWidgets
-from PyQt5 import QtGui
-from PyQt5 import QtCore
-import datetime
 import logging
-import time
-import bwb_model
-import bwb_global
+
+from bwb import bwb_model
+from PyQt5 import QtCore
+from PyQt5 import QtWidgets
+
+from bwb import bwb_global
 
 
 class PracticeCompositeWidget(QtWidgets.QWidget):

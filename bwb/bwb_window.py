@@ -1,16 +1,16 @@
-from PyQt5 import QtWidgets
-from PyQt5 import QtGui
-from PyQt5 import QtCore
-
-import bwb_model
-import bwb_central
-import bwb_practices
-import bwb_wisdom
-import bwb_calendar
-import bwb_global
-
 import enum
 import sys
+
+from PyQt5 import QtCore
+from PyQt5 import QtGui
+from PyQt5 import QtWidgets
+
+from bwb import bwb_calendar
+from bwb import bwb_central
+from bwb import bwb_model
+from bwb import bwb_practices
+from bwb import bwb_wisdom
+from bwb import bwb_global
 
 
 class EventSource(enum.Enum):

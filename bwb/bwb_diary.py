@@ -1,12 +1,13 @@
-import bwb_global
-import bwb_model
-import bwb_date_time_dialog
 import datetime
 import time
-from PyQt5 import QtWidgets
+
+from bwb import bwb_date_time_dialog
+from bwb import bwb_model
 from PyQt5 import QtCore
 from PyQt5 import QtGui
+from PyQt5 import QtWidgets
 
+from bwb import bwb_global
 
 MY_WIDGET_NAME_STR = "test-name"
 BACKGROUND_IMAGE_PATH_STR = "Gerald-G-Yoga-Poses-stylized-1-300px-CC0.png"

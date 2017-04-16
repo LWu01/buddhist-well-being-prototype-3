@@ -1,11 +1,11 @@
-import sqlite3
 import csv
-import shutil
 import datetime
+import shutil
+import sqlite3
 import time
 from typing import List
 
-import bwb_global
+from bwb import bwb_global
 
 #################
 #
@@ -82,8 +82,17 @@ def initial_schema_and_setup(i_db_conn):
         + ")"
     )
 
+    """
     journal_list = [
         ("Gratitude",),
+        ("Practice",),
+        ("Livelihood",),
+        ("Study",),
+    ]
+    """
+
+    journal_list = [
+        ("Generosity, ",),
         ("Practice",),
         ("Livelihood",),
         ("Study",),

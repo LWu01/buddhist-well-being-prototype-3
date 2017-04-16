@@ -1,12 +1,14 @@
+import sqlite3
 import sys
-from PyQt5 import QtWidgets
+
+import PyQt5
+from bwb import bwb_model
+from PyQt5 import Qt
 from PyQt5 import QtCore
 from PyQt5 import QtGui
-from PyQt5 import Qt
-import PyQt5
-import bwb_window
-import bwb_model
-import sqlite3
+from PyQt5 import QtWidgets
+
+from bwb import bwb_window
 
 ######################
 #
@@ -25,10 +27,10 @@ if __name__ == "__main__":
     tray_icon = QtWidgets.QSystemTrayIcon(QtGui.QIcon("icon.png"), app)
     tray_menu = QtWidgets.QMenu()
     tray_restore_action = QtWidgets.QAction("Restore")
-    tray_restore_action.triggered.connect(lambda x: main_window.show())
+    tray_restore_action.triggered.connect(main_window.show)
     tray_menu.addAction(tray_restore_action)
     tray_quit_action = QtWidgets.QAction("Quit")
-    tray_quit_action.triggered.connect(lambda x: sys.exit())
+    tray_quit_action.triggered.connect(sys.exit)
     tray_menu.addAction(tray_quit_action)
     tray_icon.setContextMenu(tray_menu)
     tray_icon.show()

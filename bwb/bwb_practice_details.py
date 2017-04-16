@@ -1,11 +1,11 @@
-import bwb_model
-from PyQt5 import QtWidgets
-from PyQt5 import QtCore
-from PyQt5 import QtGui
 import sched
-import time
-import datetime
 import threading
+import time
+
+from PyQt5 import QtCore
+from PyQt5 import QtWidgets
+
+from bwb import bwb_model
 
 ID_NOT_SET = -1
 BUTTON_WIDTH_IT = 28

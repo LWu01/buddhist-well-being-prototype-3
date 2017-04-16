@@ -1,14 +1,10 @@
 
-from PyQt5 import QtWidgets
+from bwb import bwb_diary
+from bwb import bwb_model
 from PyQt5 import QtCore
-from PyQt5 import QtGui
-import bwb_diary
-import bwb_model
-import bwb_global
-import bwb_date_time_dialog
-import enum
-import datetime
-import time
+from PyQt5 import QtWidgets
+
+from bwb import bwb_global
 
 ADD_NEW_HEIGHT_IT = 80
 JOURNAL_BUTTON_GROUP_ID_INT = 1

@@ -1,7 +1,8 @@
-from PyQt5 import QtWidgets
 from PyQt5 import QtCore
 from PyQt5 import QtGui
-import bwb_model
+from PyQt5 import QtWidgets
+
+from bwb import bwb_model
 
 
 class CompositeCalendarWidget(QtWidgets.QWidget):

@@ -1,3 +1,5 @@
+***Please note: This is a prototype and data is only saved to memory so it will dissapear when the application is closed.*** (The reason for saving to memory instead of saving to the disk is that we are still making large changes in the database code)
+
 # Buddhist Well-Being
 
 *Buddhist Well-Being* is a happiness and well-being diary application inspired by Buddhist ethics

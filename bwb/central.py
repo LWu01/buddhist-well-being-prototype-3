@@ -1,10 +1,10 @@
 
-from bwb import bwb_diary
-from bwb import bwb_model
+import bwb.diary
+import bwb.model
 from PyQt5 import QtCore
 from PyQt5 import QtWidgets
 
-from bwb import bwb_global
+from bwb import bwbglobal
 
 ADD_NEW_HEIGHT_IT = 80
 JOURNAL_BUTTON_GROUP_ID_INT = 1
@@ -17,7 +17,7 @@ class CompositeCentralWidget(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
 
-        journalm_list = bwb_model.JournalM.get_all()
+        journalm_list = bwb.model.JournalM.get_all()
 
         self.vbox_l2 = QtWidgets.QVBoxLayout()
         self.setLayout(self.vbox_l2)
@@ -32,17 +32,17 @@ class CompositeCentralWidget(QtWidgets.QWidget):
         self.view_radio_qbuttongroup.buttonToggled.connect(self.on_view_radio_button_toggled)
         self.day_view_qrb = QtWidgets.QRadioButton("Diary dialy overview")
         self.day_view_qrb.setChecked(True)
-        self.view_radio_qbuttongroup.addButton(self.day_view_qrb, bwb_global.ViewEnum.diary_daily_overview.value)
+        self.view_radio_qbuttongroup.addButton(self.day_view_qrb, bwbglobal.ViewEnum.diary_daily_overview.value)
         hbox_l3.addWidget(self.day_view_qrb)
         self.filter_view_qrb = QtWidgets.QRadioButton("Journal (monthly) view")
         hbox_l3.addWidget(self.filter_view_qrb)
         self.lock_view_qpb = QtWidgets.QPushButton("Lock view")
         self.lock_view_qpb.setCheckable(True)
-        self.view_radio_qbuttongroup.addButton(self.filter_view_qrb, bwb_global.ViewEnum.journal_monthly_view.value)
+        self.view_radio_qbuttongroup.addButton(self.filter_view_qrb, bwbglobal.ViewEnum.journal_monthly_view.value)
         hbox_l3.addWidget(self.lock_view_qpb)
 
         # **Adding the diary**
-        self.diary_widget = bwb_diary.DiaryListCompositeWidget()
+        self.diary_widget = bwb.diary.DiaryListCompositeWidget()
         ##diary_widget.add_text_to_diary_button_pressed_signal.connect(self.on_diary_add_entry_button_pressed)
         self.diary_widget.context_menu_change_date_signal.connect(self.on_diary_context_menu_change_date)
         self.diary_widget.context_menu_delete_signal.connect(self.on_diary_context_menu_delete)
@@ -63,7 +63,7 @@ class CompositeCentralWidget(QtWidgets.QWidget):
             journal_button_qpb.setCheckable(True)
             self.journal_qbuttongroup.addButton(journal_button_qpb, journalm.id_it)
             self.journals_hbox_l3.addWidget(journal_button_qpb)
-            if journalm.id_it == bwb_global.active_journal_id_it:
+            if journalm.id_it == bwbglobal.active_journal_id_it:
                 journal_button_qpb.setChecked(True)
 
         self.journals_hbox_l3.addStretch()
@@ -109,17 +109,17 @@ class CompositeCentralWidget(QtWidgets.QWidget):
     """
 
     def on_view_radio_button_toggled(self):
-        bwb_global.active_view_viewenum = bwb_global.ViewEnum(self.view_radio_qbuttongroup.checkedId())
+        bwbglobal.active_view_viewenum = bwbglobal.ViewEnum(self.view_radio_qbuttongroup.checkedId())
         self.update_gui()
 
     def on_journal_button_toggled(self):
-        bwb_global.active_journal_id_it = self.journal_qbuttongroup.checkedId()
+        bwbglobal.active_journal_id_it = self.journal_qbuttongroup.checkedId()
         self.update_gui()
         self.journal_button_toggled_signal.emit()
 
     def update_gui(self):
-        if bwb_global.active_view_viewenum == bwb_global.ViewEnum.journal_monthly_view:
-            active_journalm = bwb_model.JournalM.get(bwb_global.active_journal_id_it)
+        if bwbglobal.active_view_viewenum == bwbglobal.ViewEnum.journal_monthly_view:
+            active_journalm = model.JournalM.get(bwbglobal.active_journal_id_it)
             self.diary_label.setText("<h3>" + active_journalm.title_sg + " Journal</h3>")
         else:
             self.diary_label.setText("<h3>Diary</h3>")
@@ -133,15 +133,15 @@ class CompositeCentralWidget(QtWidgets.QWidget):
 
     def on_add_text_to_diary_button_clicked(self):
         notes_sg = self.adding_text_to_diary_textedit_w6.toPlainText().strip()
-        if bwb_global.active_date_qdate == QtCore.QDate.currentDate():
+        if bwbglobal.active_date_qdate == QtCore.QDate.currentDate():
             time_qdatetime = QtCore.QDateTime.currentDateTime()
             unix_time_it = time_qdatetime.toMSecsSinceEpoch() // 1000
         else:
-            unix_time_it = bwb_global.qdate_to_unixtime(bwb_global.active_date_qdate)
+            unix_time_it = bwbglobal.qdate_to_unixtime(bwbglobal.active_date_qdate)
 
         print("t_unix_time_it = " + str(unix_time_it))
 
-        bwb_model.DiaryM.add(unix_time_it, notes_sg, bwb_global.active_journal_id_it)
+        model.DiaryM.add(unix_time_it, notes_sg, bwbglobal.active_journal_id_it)
         # -TODO: Change from currentIndex
         self.adding_text_to_diary_textedit_w6.clear()
         self.update_gui()

@@ -5,7 +5,7 @@ import sqlite3
 import time
 from typing import List
 
-from bwb import bwb_global
+import bwb.bwbglobal
 
 #################
 #
@@ -413,9 +413,9 @@ class DiaryM:
     @staticmethod
     def get_all_for_active_day(i_reverse_bl=True):
         start_of_day_datetime = datetime.datetime(
-            year=bwb_global.active_date_qdate.year(),
-            month=bwb_global.active_date_qdate.month(),
-            day=bwb_global.active_date_qdate.day()
+            year=bwb.bwbglobal.active_date_qdate.year(),
+            month=bwb.bwbglobal.active_date_qdate.month(),
+            day=bwb.bwbglobal.active_date_qdate.day()
         )
         start_of_day_unixtime_it = int(start_of_day_datetime.timestamp())
 

@@ -5,12 +5,12 @@ from PyQt5 import QtCore
 from PyQt5 import QtGui
 from PyQt5 import QtWidgets
 
-from bwb import bwb_calendar
-from bwb import bwb_central
-from bwb import bwb_model
-from bwb import bwb_practices
-from bwb import bwb_wisdom
-from bwb import bwb_global
+import bwb.calendar
+import bwb.central
+import bwb.model
+import bwb.practices
+import bwb.wisdom
+import bwb.bwbglobal
 
 
 class EventSource(enum.Enum):
@@ -44,7 +44,7 @@ class WellBeingWindow(QtWidgets.QMainWindow):
         calendar_dock_qdw2 = QtWidgets.QDockWidget("Calendar", self)
         calendar_dock_qdw2.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea)
         calendar_dock_qdw2.setFeatures(QtWidgets.QDockWidget.NoDockWidgetFeatures)
-        self.custom_calendar_w3 = bwb_calendar.CompositeCalendarWidget()
+        self.custom_calendar_w3 = bwb.calendar.CompositeCalendarWidget()
         self.custom_calendar_w3.setFixedHeight(200)
         self.custom_calendar_w3.calendar_widget.selectionChanged.connect(self.on_calendar_selection_changed)
         self.custom_calendar_w3.calendar_widget.currentPageChanged.connect(self.on_calendar_page_changed)
@@ -55,18 +55,18 @@ class WellBeingWindow(QtWidgets.QMainWindow):
         self.reminders_dock_qw2.setFeatures(
             QtWidgets.QDockWidget.DockWidgetMovable |
             QtWidgets.QDockWidget.DockWidgetFloatable)
-        self.reminders_composite_w3 = bwb_practices.PracticeCompositeWidget()
+        self.reminders_composite_w3 = bwb.practices.PracticeCompositeWidget()
         self.reminders_composite_w3.item_selection_changed_signal.connect(self.on_practice_item_selection_changed)
         self.reminders_composite_w3.current_row_changed_signal.connect(self.on_practice_current_row_changed)
         self.reminders_dock_qw2.setWidget(self.reminders_composite_w3)
         self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.reminders_dock_qw2)
         # ..central widget (which **holds the diary** etc)
-        self.central_widget_w3 = bwb_central.CompositeCentralWidget()
+        self.central_widget_w3 = bwb.central.CompositeCentralWidget()
         self.setCentralWidget(self.central_widget_w3)
         self.central_widget_w3.journal_button_toggled_signal.connect(self.update_gui)
         # ..wisdom
         wisdom_dock_qw2 = QtWidgets.QDockWidget("Wisdom", self)
-        self.wisdom_composite_w3 = bwb_wisdom.WisdomCompositeWidget()
+        self.wisdom_composite_w3 = bwb.wisdom.WisdomCompositeWidget()
         wisdom_dock_qw2.setWidget(self.wisdom_composite_w3)
         self.addDockWidget(QtCore.Qt.RightDockWidgetArea, wisdom_dock_qw2)
         wisdom_dock_qw2.setAllowedAreas(QtCore.Qt.RightDockWidgetArea)
@@ -74,7 +74,7 @@ class WellBeingWindow(QtWidgets.QMainWindow):
         # Creating the menu bar..
         # ..setup of actions
         export_qaction = QtWidgets.QAction("Export", self)
-        export_qaction.triggered.connect(bwb_model.export_all)
+        export_qaction.triggered.connect(bwb.model.export_all)
         exit_qaction = QtWidgets.QAction("Exit", self)
         exit_qaction.triggered.connect(lambda x: sys.exit())
         redraw_qaction = QtWidgets.QAction("Redraw", self)
@@ -84,7 +84,7 @@ class WellBeingWindow(QtWidgets.QMainWindow):
         manual_qaction = QtWidgets.QAction("Manual", self)
         ###inline_help_qaction = QtWidgets.QAction("Inline help", self)
         backup_qaction = QtWidgets.QAction("Backup db", self)
-        backup_qaction.triggered.connect(bwb_model.backup_db_file)
+        backup_qaction.triggered.connect(bwb.model.backup_db_file)
         dear_buddha_qaction = QtWidgets.QAction("Prepend diary entries with \"Dear Buddha\"", self)
         dear_buddha_qaction.triggered.connect(self.toggle_dear_buddha_text)
         wisdom_window_qaction = wisdom_dock_qw2.toggleViewAction()
@@ -143,12 +143,12 @@ class WellBeingWindow(QtWidgets.QMainWindow):
 
     def on_calendar_selection_changed(self):
         print(str(self.custom_calendar_w3.calendar_widget.selectedDate()))
-        bwb_global.active_date_qdate = self.custom_calendar_w3.calendar_widget.selectedDate()
+        bwbglobal.active_date_qdate = self.custom_calendar_w3.calendar_widget.selectedDate()
         self.update_gui()
 
     def on_calendar_page_changed(self):
-        bwb_global.shown_month_1to12_it = self.custom_calendar_w3.calendar_widget.monthShown()
-        bwb_global.shown_year_it = self.custom_calendar_w3.calendar_widget.yearShown()
+        bwbglobal.shown_month_1to12_it = self.custom_calendar_w3.calendar_widget.monthShown()
+        bwbglobal.shown_year_it = self.custom_calendar_w3.calendar_widget.yearShown()
         self.update_gui()
 
     def on_practice_details_time_of_day_state_changed(self):
@@ -197,5 +197,5 @@ class WellBeingWindow(QtWidgets.QMainWindow):
 
         self.reminders_composite_w3.update_gui()
 
-        journalm = bwb_model.JournalM.get(bwb_global.active_journal_id_it)
+        journalm = bwb.model.JournalM.get(bwb.bwbglobal.active_journal_id_it)
         self.reminders_dock_qw2.setWindowTitle(journalm.title_sg + " journal reminders")

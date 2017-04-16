@@ -1,11 +1,11 @@
 
 import logging
 
-from bwb import bwb_model
+import bwb.model
 from PyQt5 import QtCore
 from PyQt5 import QtWidgets
 
-from bwb import bwb_global
+import bwb.bwbglobal
 
 
 class PracticeCompositeWidget(QtWidgets.QWidget):
@@ -46,7 +46,7 @@ class PracticeCompositeWidget(QtWidgets.QWidget):
         text_sg = self.adding_new_practice_qle.text().strip()  # strip is needed to remove a newline at the end (why?)
         if not (text_sg and text_sg.strip()):
             return
-        bwb_model.ReminderM.add(text_sg, bwb_global.active_journal_id_it)
+        model.ReminderM.add(text_sg, bwbglobal.active_journal_id_it)
         self.adding_new_practice_qle.clear()
         self.update_gui()
 
@@ -83,7 +83,7 @@ class PracticeCompositeWidget(QtWidgets.QWidget):
         """
         self.list_widget.clear()
         counter = 0
-        for practice_item in bwb_model.ReminderM.get_all_for_journal(bwb_global.active_journal_id_it):
+        for practice_item in bwb.model.ReminderM.get_all_for_journal(bwb.bwbglobal.active_journal_id_it):
             # Important: "Alternatively, if you want the widget to have a fixed size based on its contents,
             # you can call QLayout::setSizeConstraint(QLayout::SetFixedSize);"
             # https://doc.qt.io/qt-5/qwidget.html#setSizePolicy-1

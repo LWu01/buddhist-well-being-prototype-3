@@ -1,13 +1,13 @@
 import datetime
 import time
 
-from bwb import bwb_date_time_dialog
-from bwb import bwb_model
+import bwb.date_time_dialog
+import bwb.model
 from PyQt5 import QtCore
 from PyQt5 import QtGui
 from PyQt5 import QtWidgets
 
-from bwb import bwb_global
+from bwb import bwbglobal
 
 MY_WIDGET_NAME_STR = "test-name"
 BACKGROUND_IMAGE_PATH_STR = "Gerald-G-Yoga-Poses-stylized-1-300px-CC0.png"
@@ -74,7 +74,7 @@ class DiaryListCompositeWidget(QtWidgets.QWidget):
             self, "Remove diary entry?", "Are you sure that you want to remove this diary entry?"
         )
         if message_box_reply == QtWidgets.QMessageBox.Yes:
-            bwb_model.DiaryM.remove(int(self.last_entry_clicked_id_it))
+            model.DiaryM.remove(int(self.last_entry_clicked_id_it))
             self.update_gui()
             self.context_menu_delete_signal.emit()
         else:
@@ -85,23 +85,23 @@ class DiaryListCompositeWidget(QtWidgets.QWidget):
         Docs: http://doc.qt.io/qt-5/qinputdialog.html#getText
         """
         last_clicked_row_dbkey_it = int(self.last_entry_clicked_id_it)
-        diary_entry = bwb_model.DiaryM.get(last_clicked_row_dbkey_it)
+        diary_entry = model.DiaryM.get(last_clicked_row_dbkey_it)
         text_input_dialog = QtWidgets.QInputDialog()
         new_text_qstring = text_input_dialog.getText(
             self, "Rename dialog", "New name: ", text=diary_entry.diary_text)
         if new_text_qstring[0]:
             print("new_text_qstring = " + str(new_text_qstring))
-            bwb_model.DiaryM.update_note(last_clicked_row_dbkey_it, new_text_qstring[0])
+            model.DiaryM.update_note(last_clicked_row_dbkey_it, new_text_qstring[0])
             self.update_gui()
         else:
             pass  # -do nothing
 
     def on_context_menu_change_date(self):
         last_clicked_row_dbkey_it = int(self.last_entry_clicked_id_it)
-        diary_item = bwb_model.DiaryM.get(last_clicked_row_dbkey_it)
-        updated_time_unix_time_it = bwb_date_time_dialog.DateTimeDialog.get_date_time_dialog(diary_item.date_added_it)
+        diary_item = model.DiaryM.get(last_clicked_row_dbkey_it)
+        updated_time_unix_time_it = date_time_dialog.DateTimeDialog.get_date_time_dialog(diary_item.date_added_it)
         if updated_time_unix_time_it != -1:
-            bwb_model.DiaryM.update_date(diary_item.id, updated_time_unix_time_it)
+            model.DiaryM.update_date(diary_item.id, updated_time_unix_time_it)
             self.update_gui()
             self.context_menu_change_date_signal.emit()
         else:
@@ -109,15 +109,15 @@ class DiaryListCompositeWidget(QtWidgets.QWidget):
 
     def update_gui(self):
         clear_widget_and_layout_children(self.scroll_list_vbox_l5)
-        qdate = QtCore.QDate(bwb_global.shown_year_it, bwb_global.shown_month_1to12_it, 1)
+        qdate = QtCore.QDate(bwbglobal.shown_year_it, bwbglobal.shown_month_1to12_it, 1)
         qdatetime = QtCore.QDateTime(qdate)
         start_of_month_as_unix_time_it = qdatetime.toMSecsSinceEpoch() // 1000
 
-        if bwb_global.active_view_viewenum == bwb_global.ViewEnum.journal_monthly_view:
-            diarym_list = bwb_model.DiaryM.get_all_for_journal_and_month(
-                bwb_global.active_journal_id_it, start_of_month_as_unix_time_it, qdate.daysInMonth())
-        elif bwb_global.active_view_viewenum == bwb_global.ViewEnum.diary_daily_overview:
-            diarym_list = bwb_model.DiaryM.get_all_for_active_day()
+        if bwbglobal.active_view_viewenum == bwbglobal.ViewEnum.journal_monthly_view:
+            diarym_list = model.DiaryM.get_all_for_journal_and_month(
+                bwbglobal.active_journal_id_it, start_of_month_as_unix_time_it, qdate.daysInMonth())
+        elif bwbglobal.active_view_viewenum == bwbglobal.ViewEnum.diary_daily_overview:
+            diarym_list = bwb.model.DiaryM.get_all_for_active_day()
         else:
             pass
 
@@ -133,7 +133,7 @@ class DiaryListCompositeWidget(QtWidgets.QWidget):
                 date_string_format_str = "%-d %b"  # -weekday
 
             left_qlabel = QtWidgets.QLabel("")
-            if bwb_global.active_view_viewenum == bwb_global.ViewEnum.journal_monthly_view:
+            if bwbglobal.active_view_viewenum == bwbglobal.ViewEnum.journal_monthly_view:
                 date_str = datetime.datetime.fromtimestamp(diary_entry.date_added_it).strftime(
                     date_string_format_str)
                 if old_date_str == date_str:
@@ -143,8 +143,8 @@ class DiaryListCompositeWidget(QtWidgets.QWidget):
                 else:
                     left_qlabel.setText(date_str)
                 old_date_str = date_str
-            elif bwb_global.active_view_viewenum == bwb_global.ViewEnum.diary_daily_overview:
-                journalm = bwb_model.JournalM.get(diary_entry.journal_ref_it)
+            elif bwbglobal.active_view_viewenum == bwbglobal.ViewEnum.diary_daily_overview:
+                journalm = bwb.model.JournalM.get(diary_entry.journal_ref_it)
                 journal_sg = str(journalm.title_sg)
                 left_qlabel = QtWidgets.QLabel(journal_sg)
             else:

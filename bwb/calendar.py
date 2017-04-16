@@ -2,7 +2,7 @@ from PyQt5 import QtCore
 from PyQt5 import QtGui
 from PyQt5 import QtWidgets
 
-from bwb import bwb_model
+import bwb.model
 
 
 class CompositeCalendarWidget(QtWidgets.QWidget):
@@ -29,7 +29,7 @@ class CompositeCalendarWidget(QtWidgets.QWidget):
         date_qtextcharformat = QtGui.QTextCharFormat()
         date_qtextcharformat.setFontWeight(QtGui.QFont.Bold)
 
-        for diarym in bwb_model.DiaryM.get_all():
+        for diarym in bwb.model.DiaryM.get_all():
             qdatetime = QtCore.QDateTime.fromMSecsSinceEpoch(diarym.date_added_it * 1000)
             self.calendar_widget.setDateTextFormat(qdatetime.date(), date_qtextcharformat)
 

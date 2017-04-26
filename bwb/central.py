@@ -4,7 +4,8 @@ import bwb.model
 from PyQt5 import QtCore
 from PyQt5 import QtWidgets
 
-from bwb import bwbglobal
+from bwb import bwbglobal, model
+#prompted to import model above - LW
 
 ADD_NEW_HEIGHT_IT = 80
 JOURNAL_BUTTON_GROUP_ID_INT = 1
@@ -30,7 +31,7 @@ class CompositeCentralWidget(QtWidgets.QWidget):
         hbox_l3.addStretch()
         self.view_radio_qbuttongroup = QtWidgets.QButtonGroup(self)
         self.view_radio_qbuttongroup.buttonToggled.connect(self.on_view_radio_button_toggled)
-        self.day_view_qrb = QtWidgets.QRadioButton("Diary dialy overview")
+        self.day_view_qrb = QtWidgets.QRadioButton("Diary daily overview") #spelling correction
         self.day_view_qrb.setChecked(True)
         self.view_radio_qbuttongroup.addButton(self.day_view_qrb, bwbglobal.ViewEnum.diary_daily_overview.value)
         hbox_l3.addWidget(self.day_view_qrb)

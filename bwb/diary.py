@@ -7,7 +7,17 @@ from PyQt5 import QtCore
 from PyQt5 import QtGui
 from PyQt5 import QtWidgets
 
-from bwb import bwbglobal
+from bwb import bwbglobal, model, date_time_dialog
+#unable to run app, i was promtped to import model and data_time_dialog above - LW
+
+"""
+I have not edited much, just added some hyphens for clarity. 
+I am mostly unsure of which widgets refer to what, in particular what the hbox_16 refers from line 140 onwards
+It is that and trying to picture the layout in terms of levels, I am unsure of which layout or widgets is placed where
+I am more accustomed to Java, where I can reference a separate layout file
+There was some prompting to import some functions again, here and in the central.py file, just so I could run and
+edit the app - LW
+"""
 
 MY_WIDGET_NAME_STR = "test-name"
 BACKGROUND_IMAGE_PATH_STR = "Gerald-G-Yoga-Poses-stylized-1-300px-CC0.png"
@@ -19,6 +29,11 @@ class DiaryListCompositeWidget(QtWidgets.QWidget):
     """
     Inspiration for this class:
     http://stackoverflow.com/questions/20041385/python-pyqt-setting-scroll-area
+    
+       Suffix explanation:
+    _w: widget
+    _l: layout
+    _# (number): The level in the layout stack
     """
 
     context_menu_change_date_signal = QtCore.pyqtSignal()
@@ -28,11 +43,12 @@ class DiaryListCompositeWidget(QtWidgets.QWidget):
 
     def __init__(self):
         super().__init__()
-
+        # vbox - does this refer to the main view window? - LW
         self.vbox_l2 = QtWidgets.QVBoxLayout()
         self.scroll_area_w3 = QtWidgets.QScrollArea()
         self.scroll_area_w3.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
         self.scroll_area_w3.setWidgetResizable(True)
+        # I am unsure of what widget refers to what? - LW
         self.scroll_list_widget_w4 = QtWidgets.QWidget()
         self.scroll_list_widget_w4.setObjectName(MY_WIDGET_NAME_STR)
         self.scroll_list_widget_w4.setStyleSheet("#" + MY_WIDGET_NAME_STR
@@ -124,7 +140,7 @@ class DiaryListCompositeWidget(QtWidgets.QWidget):
         old_date_str = ""
         for diary_entry in diarym_list:
             label_text_sg = diary_entry.diary_text.strip()
-
+            # I understand hbox is a container for widgets, I wasn't sure what this one was referring to - LW
             hbox_l6 = QtWidgets.QHBoxLayout()
             self.scroll_list_vbox_l5.addLayout(hbox_l6)
 

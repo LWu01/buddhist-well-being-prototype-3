@@ -3,12 +3,14 @@ from PyQt5 import QtGui
 from PyQt5 import QtWidgets
 
 import bwb.model
+import bwb.bwbglobal
 
 
 class CompositeCalendarWidget(QtWidgets.QWidget):
 
     def __init__(self):
         super().__init__()
+        # this is similar to diary.py, unsure of that vbox and hbox specifically refers too - LW
 
         vbox_l2 = QtWidgets.QVBoxLayout()
         hbox_l3 = QtWidgets.QHBoxLayout()
